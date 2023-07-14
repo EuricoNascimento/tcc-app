@@ -204,6 +204,7 @@ fun BottomNavigationItem(
             .fillMaxWidth()
             .clickable { onClick() }
             .semantics(mergeDescendants = true) {}
+            .background(colorsSchemaSelected)
     ) {
         Icon(
             imageVector = if(selected && iconSelected != null)  iconSelected else icon,
