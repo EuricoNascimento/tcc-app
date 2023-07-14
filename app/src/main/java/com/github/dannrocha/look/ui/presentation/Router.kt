@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,6 +42,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.github.dannrocha.look.ui.component.ScaleText
 import com.github.dannrocha.look.ui.presentation.configuration.ConfigurationPresentation
 import com.github.dannrocha.look.ui.viewmodel.configuration.SharedConfigurationViewModel
 
@@ -80,8 +83,8 @@ fun BottomNavigationBar(
     navController: NavHostController
 ) {
     BottomNavigation(
-        modifier = Modifier.
-        height(80.dp)
+        modifier = Modifier
+            .defaultMinSize(minHeight = 80.dp)
     ){
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -103,7 +106,9 @@ fun BottomNavigationBar(
 
         bottomNavItems.forEach { navItem ->
             BottomNavigationItem(
-                modifier = Modifier.weight(1f, false),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f, false),
                 selected = currentRoute == navItem.route,
                 onClick = {
                     if(currentRoute == navItem.route)
@@ -209,9 +214,9 @@ fun BottomNavigationItem(
 
         )
         if(label.isNotBlank()) {
-            Text(
+            ScaleText(
                 text = label,
-                fontSize = 18.times(fontScale.value).sp,
+                fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = if(selected) FontWeight.Bold else FontWeight.Normal,
