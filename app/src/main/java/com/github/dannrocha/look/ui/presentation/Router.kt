@@ -32,8 +32,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.times
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -41,7 +40,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.github.dannrocha.look.ui.presentation.configuration.ConfigurationApresentation
+import com.github.dannrocha.look.ui.presentation.configuration.ConfigurationPresentation
 import com.github.dannrocha.look.ui.viewmodel.configuration.SharedConfigurationViewModel
 
 enum class RouterSet(val title: String) {
@@ -59,29 +58,27 @@ data class BottomNavItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Router(
-    sharedConfigurationViewModel: SharedConfigurationViewModel = viewModel()
-) {
+fun Router() {
 
     val navController = rememberNavController()
 
     Scaffold(
         content = { padding ->
-            NavHostContainer(navController = navController, padding = padding, sharedConfigurationViewModel)
+            NavHostContainer(navController = navController, padding = padding)
         },
         bottomBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry?.destination?.route
 
-            BottomNavigationBar(navController = navController, sharedConfigurationViewModel)
+            BottomNavigationBar(navController = navController)
         },
     )
 }
 
 @Composable
 fun BottomNavigationBar(
-    navController: NavHostController,
-    sharedConfigurationViewModel: SharedConfigurationViewModel) {
+    navController: NavHostController
+) {
     BottomNavigation(
         modifier = Modifier.
         height(80.dp)
@@ -108,7 +105,6 @@ fun BottomNavigationBar(
             BottomNavigationItem(
                 modifier = Modifier.weight(1f, false),
                 selected = currentRoute == navItem.route,
-                sharedConfigurationViewModel = sharedConfigurationViewModel,
                 onClick = {
                     if(currentRoute == navItem.route)
                         return@BottomNavigationItem
@@ -133,7 +129,6 @@ fun BottomNavigationBar(
 fun NavHostContainer(
     navController: NavHostController,
     padding: PaddingValues,
-    sharedConfigurationViewModel: SharedConfigurationViewModel
 ) {
     NavHost(
         navController = navController,
@@ -141,10 +136,10 @@ fun NavHostContainer(
         modifier = Modifier.padding(paddingValues = padding),
         builder = {
             composable(RouterSet.OverviewPresentation.name) {
-                OverviewPresentation(navController, sharedConfigurationViewModel = sharedConfigurationViewModel)
+                OverviewPresentation(navController)
             }
             composable(RouterSet.MoreApresentation.name) {
-                ConfigurationApresentation(sharedConfigurationViewModel = sharedConfigurationViewModel)
+                ConfigurationPresentation()
             }
         }
     )
@@ -181,11 +176,11 @@ fun BottomNavigation(
 @Composable
 fun BottomNavigationItem(
     icon: ImageVector,
-    iconSelected: ImageVector? = null,
     label: String,
+    iconSelected: ImageVector? = null,
     selected: Boolean = false,
     modifier: Modifier = Modifier,
-    sharedConfigurationViewModel: SharedConfigurationViewModel,
+    sharedConfigurationViewModel: SharedConfigurationViewModel = hiltViewModel(),
     onClick: () -> Unit = {},
 ) {
 
@@ -201,7 +196,6 @@ fun BottomNavigationItem(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .height(80.dp)
             .fillMaxWidth()
             .clickable { onClick() }
             .semantics(mergeDescendants = true) {}

@@ -2,6 +2,7 @@ package com.github.dannrocha.look.ui.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,8 +22,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.github.dannrocha.look.ui.component.ScaleText
 import com.github.dannrocha.look.ui.viewmodel.configuration.SharedConfigurationViewModel
 import com.github.dannrocha.look.ui.viewmodel.overview.OverviewViewModel
 
@@ -32,17 +35,16 @@ import com.github.dannrocha.look.ui.viewmodel.overview.OverviewViewModel
 fun OverviewPresentation(
     navController: NavHostController,
     overviewViewModel: OverviewViewModel = viewModel(),
-    sharedConfigurationViewModel: SharedConfigurationViewModel
+    sharedConfigurationViewModel: SharedConfigurationViewModel = hiltViewModel()
 ) {
 
     val classes by overviewViewModel.uiState.collectAsState()
-    val fontScale by sharedConfigurationViewModel.fontScale.collectAsState(initial = 1.sp)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
         items(items = classes) { item ->
-            ClassItem(className =  item.name, teacherName = item.teacherName, fontScale = fontScale) {}
+            ClassItem(className =  item.name, teacherName = item.teacherName) {}
         }
     }
 }
@@ -52,7 +54,6 @@ fun ClassItem(
     className: String,
     teacherName: String,
     modifier: Modifier = Modifier,
-    fontScale: TextUnit = 1.sp,
     onClick: () -> Unit = {}
 ) {
     Card(
@@ -65,8 +66,9 @@ fun ClassItem(
             .fillMaxWidth()
             .padding(all = 8.dp)
         ) {
-            Text(text = className, fontSize = 30.times(fontScale.value).sp)
-            Text(text = teacherName, fontSize = 25.times(fontScale.value).sp)
+            ScaleText(text = className, fontSize = 30.sp)
+            Spacer(modifier = Modifier.padding(vertical = 8.dp))
+            ScaleText(text = teacherName, fontSize = 25.sp)
         }
     }
 }
