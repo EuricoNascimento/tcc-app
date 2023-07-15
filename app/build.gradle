@@ -14,11 +14,11 @@ hilt {
 }
 
 android {
-    namespace 'com.github.dannrocha.look'
+    namespace 'com.github.edu.look'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.github.dannrocha.look"
+        applicationId "com.github.edu.look"
         minSdk 24
         targetSdk 33
         versionCode 1
