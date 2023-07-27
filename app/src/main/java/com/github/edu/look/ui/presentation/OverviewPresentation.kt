@@ -21,9 +21,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.github.edu.look.ui.component.ScaleText
+import com.github.edu.look.ui.theme.LookDefault
 import com.github.edu.look.ui.viewmodel.configuration.SharedConfigurationViewModel
 import com.github.edu.look.ui.viewmodel.overview.OverviewViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,16 +52,16 @@ fun ClassItem(
 ) {
     Card(
         modifier = modifier
-            .padding(all = 8.dp)
+            .padding(all = LookDefault.Padding.middle)
             .clickable { onClick() }
     ) {
         Column(modifier = Modifier
             .semantics(mergeDescendants = true) {}
             .fillMaxWidth()
-            .padding(all = 8.dp)
+            .padding(all = LookDefault.Padding.middle)
         ) {
-            ScaleText(text = className, fontSize = 30.sp)
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
+            ScaleText(text = className, fontSize = LookDefault.Padding.extraLarge)
+            Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.middle))
             ScaleText(text = teacherName, fontSize = 25.sp)
         }
     }

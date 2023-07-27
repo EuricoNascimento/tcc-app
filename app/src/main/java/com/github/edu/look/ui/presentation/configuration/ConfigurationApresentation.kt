@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.edu.look.ui.component.ScaleText
+import com.github.edu.look.ui.theme.LookDefault
 import com.github.edu.look.ui.viewmodel.configuration.SharedConfigurationViewModel
 
 @Composable
@@ -53,14 +54,14 @@ fun SetupItem(
         modifier = modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 120.dp)
-            .padding(8.dp),
+            .padding(LookDefault.Padding.middle),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
 
         ) {
-            ScaleText(text = label, fontSize = 30.sp)
+            ScaleText(text = label, fontSize = LookDefault.Padding.extraLarge)
             content()
         }
     }
