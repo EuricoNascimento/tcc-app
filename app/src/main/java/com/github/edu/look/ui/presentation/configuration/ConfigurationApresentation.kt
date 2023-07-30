@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -61,7 +62,7 @@ fun SetupItem(
                 .fillMaxSize()
 
         ) {
-            ScaleText(text = label, fontSize = LookDefault.Padding.extraLarge)
+            ScaleText(text = label, fontSize = 12.sp)
             content()
         }
     }
