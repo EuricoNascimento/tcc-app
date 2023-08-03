@@ -1,6 +1,6 @@
 {
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "features": {
-      "ghcr.io/jarrodcolburn/features/android-sdk:33.0.2": {}
+      "ghcr.io/akhildevelops/devcontainer-features/android-cli:0": {}
   }
 }
