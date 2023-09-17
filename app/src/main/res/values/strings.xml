@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Look</string>
+    <string name="posted">Postado: %s</string>
+    <string name="classTitle">Aula</string>
+    <string name="back">voltar</string>
+    <string name="settings">Configuração</string>
 </resources>

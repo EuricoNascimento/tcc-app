@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +31,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -42,10 +40,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentation
-import com.github.edu.look.ui.viewmodel.configuration.SharedConfigurationViewModel
 
 enum class RouterSet(val title: String) {
     OverviewPresentation("Turmas"),
+    ClassTopicScreen("Aulas"),
     MoreApresentation("Mais")
 }
 
@@ -89,10 +87,10 @@ fun BottomNavigationBar(
 
         val bottomNavItems = listOf(
             BottomNavItem(
-                label = "Turmas",
+                label = "Aulas",
                 icon = Icons.Filled.Home,
                 iconSelected = Icons.Outlined.Home,
-                route = RouterSet.OverviewPresentation.name
+                route = RouterSet.ClassTopicScreen.name
             ),
             BottomNavItem(
                 label = "Configurações",
@@ -135,7 +133,7 @@ fun NavHostContainer(
 ) {
     NavHost(
         navController = navController,
-        startDestination = RouterSet.OverviewPresentation.name,
+        startDestination = RouterSet.ClassTopicScreen.name,
         modifier = Modifier.padding(paddingValues = padding),
         builder = {
             composable(RouterSet.OverviewPresentation.name) {
@@ -143,6 +141,9 @@ fun NavHostContainer(
             }
             composable(RouterSet.MoreApresentation.name) {
                 ConfigurationPresentation()
+            }
+            composable(RouterSet.ClassTopicScreen.name) {
+                ClassTopicScreen(navController)
             }
         }
     )
