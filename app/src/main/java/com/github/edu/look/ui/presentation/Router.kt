@@ -87,10 +87,10 @@ fun BottomNavigationBar(
 
         val bottomNavItems = listOf(
             BottomNavItem(
-                label = "Aulas",
+                label = "Turmas",
                 icon = Icons.Filled.Home,
                 iconSelected = Icons.Outlined.Home,
-                route = RouterSet.ClassTopicScreen.name
+                route = RouterSet.OverviewPresentation.name
             ),
             BottomNavItem(
                 label = "Configurações",
@@ -141,9 +141,6 @@ fun NavHostContainer(
             }
             composable(RouterSet.MoreApresentation.name) {
                 ConfigurationPresentation()
-            }
-            composable(RouterSet.ClassTopicScreen.name) {
-                ClassTopicScreen(navController)
             }
         }
     )
