@@ -44,16 +44,22 @@ fun ConfigurationPresentation(
 
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row {
-            Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = stringResource(R.string.your_photo, "Fulano de Tal")
-            )
-            ScaleText(text = "Aluno Fulano de Tal", color = MaterialTheme.colorScheme.onPrimary)
-            ScaleText(text = "20182SI0101", color = MaterialTheme.colorScheme.onPrimary)
-        }
+        Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.extraLarge))
+        Icon(
+            imageVector = Icons.Filled.Person,
+            contentDescription = stringResource(R.string.your_photo, "Fulano de Tal")
+        )
+        ScaleText(
+            text = "Aluno Fulano de Tal",
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = 22.sp)
+        ScaleText(
+            text = "20182SI0101",
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = 18.sp)
+
         Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.middle))
         SetupItem(label = stringResource(id = R.string.size_text, fontScale.value)) {
             Slider(
@@ -65,18 +71,17 @@ fun ConfigurationPresentation(
             )
         }
         Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.large))
-        Row {
-            Button(
-                onClick = { /*TODO*/ },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                ScaleText(
-                    text = stringResource(R.string.exit_account),
-                    color = MaterialTheme.colorScheme.primary,
-                    textAlign = TextAlign.Center
-                )
-            }
+        Button(
+            onClick = { /*TODO*/ },
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary),
+            shape = MaterialTheme.shapes.medium
+        ) {
+            ScaleText(
+                text = stringResource(R.string.exit_account),
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
+                fontSize = 22.sp
+            )
         }
     }
 }
@@ -93,12 +98,8 @@ fun SetupItem(
             .defaultMinSize(minHeight = 120.dp)
             .padding(LookDefault.Padding.middle),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-
-        ) {
-            ScaleText(text = label, fontSize = 12.sp)
+        Column {
+            ScaleText(text = label, fontSize = 12.sp, textAlign = TextAlign.Center)
             content()
         }
     }
