@@ -11,13 +11,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.edu.look.R
 import com.github.edu.look.data.classtopic.ClassTopic
 import com.github.edu.look.ui.component.TopicCard
 import com.github.edu.look.ui.theme.LookDefault
-import com.github.edu.look.ui.theme.LookTheme
 import com.github.edu.look.ui.viewmodel.classtopic.ClassTopicViewModel
 
 @Composable
@@ -42,24 +40,6 @@ fun ClassTopic(topics: List<ClassTopic>, modifier: Modifier = Modifier) {
                     border = BorderStroke(LookDefault.Stroke.small, MaterialTheme.colorScheme.onPrimary)
                 )
             }
-        }
-    }
-}
-
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewTeste() {
-    LookTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            ClassTopic(mutableListOf(
-                ClassTopic(id = 1, topic = "Tabela periodica parte 1", date = "20/03/2023"),
-                ClassTopic(id = 2, topic = "Tabela periodica parte 2", date = "21/03/2023")
-            ))
         }
     }
 }
