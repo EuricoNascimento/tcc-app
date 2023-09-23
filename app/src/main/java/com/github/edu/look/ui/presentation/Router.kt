@@ -12,41 +12,46 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.github.edu.look.R
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentation
-import com.github.edu.look.ui.viewmodel.configuration.SharedConfigurationViewModel
+import com.github.edu.look.ui.theme.LookDefault
 
 enum class RouterSet(val title: String) {
     OverviewPresentation("Turmas"),
-    MoreApresentation("Mais")
+    ClassTopicScreen("Aulas"),
+    MorePresentation("Mais")
 }
 
 data class BottomNavItem(
@@ -64,15 +69,50 @@ fun Router() {
     val navController = rememberNavController()
 
     Scaffold(
+        modifier = Modifier.background(MaterialTheme.colorScheme.tertiary),
+        topBar = {
+            TopAppBar(
+                title = {
+                    ScaleText(
+                        text = stringResource(R.string.classTitle),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = LookDefault.FontSize.small
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back))
+                    }
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        },
+        floatingActionButton = {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+            if (currentRoute != RouterSet.MorePresentation.name) {
+                FloatingActionButton(
+                    onClick = { navController.navigate(RouterSet.MorePresentation.name) },
+                    shape = MaterialTheme.shapes.large,
+                    containerColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = stringResource(R.string.settings),
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
+        },
         content = { padding ->
             NavHostContainer(navController = navController, padding = padding)
         },
         bottomBar = {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
-
             BottomNavigationBar(navController = navController)
-        },
+        }
     )
 }
 
@@ -82,7 +122,7 @@ fun BottomNavigationBar(
 ) {
     BottomNavigation(
         modifier = Modifier
-            .defaultMinSize(minHeight = 80.dp)
+            .defaultMinSize(minHeight = LookDefault.Padding.ultraLarge)
     ){
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -95,11 +135,11 @@ fun BottomNavigationBar(
                 route = RouterSet.OverviewPresentation.name
             ),
             BottomNavItem(
-                label = "Configurações",
+                label = "Aulas",
                 icon = Icons.Filled.Settings,
                 iconSelected = Icons.Outlined.Settings,
-                route = RouterSet.MoreApresentation.name
-            ),
+                route = RouterSet.ClassTopicScreen.name
+            )
         )
 
         bottomNavItems.forEach { navItem ->
@@ -111,13 +151,7 @@ fun BottomNavigationBar(
                 onClick = {
                     if(currentRoute == navItem.route)
                         return@BottomNavigationItem
-                    navController.navigate(route = navItem.route) {
-                        restoreState = true
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                            inclusive = false
-                        }
-                    }
+                    navController.navigate(route = navItem.route)
                 },
                 icon = navItem.icon,
                 iconSelected = navItem.iconSelected,
@@ -128,6 +162,8 @@ fun BottomNavigationBar(
     }
 }
 
+
+
 @Composable
 fun NavHostContainer(
     navController: NavHostController,
@@ -135,14 +171,17 @@ fun NavHostContainer(
 ) {
     NavHost(
         navController = navController,
-        startDestination = RouterSet.OverviewPresentation.name,
+        startDestination = RouterSet.ClassTopicScreen.name,
         modifier = Modifier.padding(paddingValues = padding),
         builder = {
             composable(RouterSet.OverviewPresentation.name) {
                 OverviewPresentation(navController)
             }
-            composable(RouterSet.MoreApresentation.name) {
+            composable(RouterSet.MorePresentation.name) {
                 ConfigurationPresentation()
+            }
+            composable(RouterSet.ClassTopicScreen.name) {
+                ClassTopicPresentation()
             }
         }
     )
@@ -213,7 +252,7 @@ fun BottomNavigationItem(
         if(label.isNotBlank()) {
             ScaleText(
                 text = label,
-                fontSize = 18.sp,
+                fontSize = LookDefault.FontSize.medium,
                 color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = if(selected) FontWeight.Bold else FontWeight.Normal,
