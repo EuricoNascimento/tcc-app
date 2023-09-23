@@ -46,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.edu.look.R
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentation
+import com.github.edu.look.ui.theme.LookDefault
 
 enum class RouterSet(val title: String) {
     OverviewPresentation("Turmas"),
@@ -75,7 +76,7 @@ fun Router() {
                     ScaleText(
                         text = stringResource(R.string.classTitle),
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 12.sp
+                        fontSize = LookDefault.FontSize.small
                     )
                 },
                 navigationIcon = {
@@ -110,9 +111,6 @@ fun Router() {
             NavHostContainer(navController = navController, padding = padding)
         },
         bottomBar = {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
-
             BottomNavigationBar(navController = navController)
         }
     )
@@ -124,7 +122,7 @@ fun BottomNavigationBar(
 ) {
     BottomNavigation(
         modifier = Modifier
-            .defaultMinSize(minHeight = 80.dp)
+            .defaultMinSize(minHeight = LookDefault.Padding.ultraLarge)
     ){
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -254,7 +252,7 @@ fun BottomNavigationItem(
         if(label.isNotBlank()) {
             ScaleText(
                 text = label,
-                fontSize = 18.sp,
+                fontSize = LookDefault.FontSize.medium,
                 color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = if(selected) FontWeight.Bold else FontWeight.Normal,
