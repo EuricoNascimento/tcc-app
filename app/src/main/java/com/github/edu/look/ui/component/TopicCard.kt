@@ -26,7 +26,9 @@ fun TopicCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     border: BorderStroke = BorderStroke(LookDefault.Stroke.none, MaterialTheme.colorScheme.onPrimary),
-    colors: CardColors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
+    colors: CardColors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
+    colorSubTitle: Color = MaterialTheme.colorScheme.onPrimary,
+    colorTitle: Color = MaterialTheme.colorScheme.primary
 ) {
     Card (
         modifier = modifier
@@ -42,8 +44,8 @@ fun TopicCard(
         ) {
             ScaleText(
                 text = title,
-                fontSize = 22.sp,
-                color = Color.Green,
+                fontSize = LookDefault.FontSize.medium,
+                color = colorTitle,
                 modifier = Modifier
                     .padding(LookDefault.Padding.middle)
                     .align(alignment = Alignment.CenterHorizontally)
@@ -51,8 +53,8 @@ fun TopicCard(
             subTitle?.let {
                 ScaleText(
                     text = it,
-                    fontSize = 14.sp,
-                    color = Color.Black,
+                    fontSize = LookDefault.FontSize.small,
+                    color = colorSubTitle,
                     modifier = Modifier
                         .padding(LookDefault.Padding.middle)
                         .align(alignment = Alignment.CenterHorizontally)
