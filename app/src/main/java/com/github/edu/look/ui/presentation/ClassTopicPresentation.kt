@@ -21,7 +21,7 @@ import com.github.edu.look.ui.theme.LookTheme
 import com.github.edu.look.ui.viewmodel.classtopic.ClassTopicViewModel
 
 @Composable
-fun ClassTopicScreen(
+fun ClassTopicPresentation(
     classTopicViewModel: ClassTopicViewModel = viewModel(),
 ) {
     val topics by classTopicViewModel.uiState.collectAsState()

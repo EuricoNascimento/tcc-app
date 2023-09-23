@@ -1,6 +1,5 @@
 package com.github.edu.look.ui.presentation
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,15 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -94,16 +90,20 @@ fun Router() {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate(RouterSet.MorePresentation.name) },
-                shape = MaterialTheme.shapes.large,
-                containerColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Settings,
-                    contentDescription = stringResource(R.string.settings),
-                    tint = MaterialTheme.colorScheme.secondary
-                )
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+            if (currentRoute != RouterSet.MorePresentation.name) {
+                FloatingActionButton(
+                    onClick = { navController.navigate(RouterSet.MorePresentation.name) },
+                    shape = MaterialTheme.shapes.large,
+                    containerColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = stringResource(R.string.settings),
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                }
             }
         },
         content = { padding ->
@@ -114,7 +114,7 @@ fun Router() {
             val currentRoute = navBackStackEntry?.destination?.route
 
             BottomNavigationBar(navController = navController)
-        },
+        }
     )
 }
 
@@ -151,17 +151,9 @@ fun BottomNavigationBar(
                     .weight(1f, false),
                 selected = currentRoute == navItem.route,
                 onClick = {
-                    Log.i("Clicou", "$currentRoute / ${navItem.route}")
                     if(currentRoute == navItem.route)
                         return@BottomNavigationItem
                     navController.navigate(route = navItem.route)
-//                    {
-//                        restoreState = true
-//                        popUpTo(navController.graph.findStartDestination().id) {
-//                            saveState = true
-//                            inclusive = false
-//                        }
-//                    }
                 },
                 icon = navItem.icon,
                 iconSelected = navItem.iconSelected,
@@ -191,7 +183,7 @@ fun NavHostContainer(
                 ConfigurationPresentation()
             }
             composable(RouterSet.ClassTopicScreen.name) {
-                ClassTopicScreen()
+                ClassTopicPresentation()
             }
         }
     )
