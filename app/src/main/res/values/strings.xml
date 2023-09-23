@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">Look</string>
-    <string name="posted">Postado: %s</string>
+    <string name="posted">Postado em %s</string>
     <string name="classTitle">Aula</string>
     <string name="back">voltar</string>
     <string name="settings">Configuração</string>
+    <string name="size_text">Escala da fonte: %sx</string>
+    <string name="exit_account">Sair da conta</string>
+    <string name="your_photo">Foto do aluno %s</string>
 </resources>

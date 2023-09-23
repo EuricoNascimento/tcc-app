@@ -1,5 +1,6 @@
 package com.github.edu.look.ui.presentation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,21 +13,29 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -38,13 +47,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.github.edu.look.R
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentation
 
 enum class RouterSet(val title: String) {
     OverviewPresentation("Turmas"),
     ClassTopicScreen("Aulas"),
-    MoreApresentation("Mais")
+    MorePresentation("Mais")
 }
 
 data class BottomNavItem(
@@ -62,6 +72,40 @@ fun Router() {
     val navController = rememberNavController()
 
     Scaffold(
+        modifier = Modifier.background(MaterialTheme.colorScheme.tertiary),
+        topBar = {
+            TopAppBar(
+                title = {
+                    ScaleText(
+                        text = stringResource(R.string.classTitle),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 12.sp
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back))
+                    }
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(RouterSet.MorePresentation.name) },
+                shape = MaterialTheme.shapes.large,
+                containerColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = stringResource(R.string.settings),
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+        },
         content = { padding ->
             NavHostContainer(navController = navController, padding = padding)
         },
@@ -93,11 +137,11 @@ fun BottomNavigationBar(
                 route = RouterSet.OverviewPresentation.name
             ),
             BottomNavItem(
-                label = "Configurações",
+                label = "Aulas",
                 icon = Icons.Filled.Settings,
                 iconSelected = Icons.Outlined.Settings,
-                route = RouterSet.MoreApresentation.name
-            ),
+                route = RouterSet.ClassTopicScreen.name
+            )
         )
 
         bottomNavItems.forEach { navItem ->
@@ -107,15 +151,17 @@ fun BottomNavigationBar(
                     .weight(1f, false),
                 selected = currentRoute == navItem.route,
                 onClick = {
+                    Log.i("Clicou", "$currentRoute / ${navItem.route}")
                     if(currentRoute == navItem.route)
                         return@BottomNavigationItem
-                    navController.navigate(route = navItem.route) {
-                        restoreState = true
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                            inclusive = false
-                        }
-                    }
+                    navController.navigate(route = navItem.route)
+//                    {
+//                        restoreState = true
+//                        popUpTo(navController.graph.findStartDestination().id) {
+//                            saveState = true
+//                            inclusive = false
+//                        }
+//                    }
                 },
                 icon = navItem.icon,
                 iconSelected = navItem.iconSelected,
@@ -125,6 +171,8 @@ fun BottomNavigationBar(
 
     }
 }
+
+
 
 @Composable
 fun NavHostContainer(
@@ -139,8 +187,11 @@ fun NavHostContainer(
             composable(RouterSet.OverviewPresentation.name) {
                 OverviewPresentation(navController)
             }
-            composable(RouterSet.MoreApresentation.name) {
+            composable(RouterSet.MorePresentation.name) {
                 ConfigurationPresentation()
+            }
+            composable(RouterSet.ClassTopicScreen.name) {
+                ClassTopicScreen()
             }
         }
     )

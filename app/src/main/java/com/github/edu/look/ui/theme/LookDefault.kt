@@ -10,4 +10,9 @@ object LookDefault {
         val large = 16.dp
         val extraLarge = 32.dp
     }
+
+    object Stroke {
+        val none = 0.dp
+        val small = 2.dp
+    }
 }
