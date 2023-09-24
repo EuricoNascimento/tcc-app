@@ -35,8 +35,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -50,8 +48,9 @@ import com.github.edu.look.ui.theme.LookDefault
 
 enum class RouterSet(val title: String) {
     OverviewPresentation("Turmas"),
-    ClassTopicScreen("Aulas"),
-    MorePresentation("Mais")
+    ClassTopicPresentation("Aulas"),
+    MorePresentation("Mais"),
+    ClassCoursePresentation("Disciplina")
 }
 
 data class BottomNavItem(
@@ -129,16 +128,16 @@ fun BottomNavigationBar(
 
         val bottomNavItems = listOf(
             BottomNavItem(
-                label = "Turmas",
+                label = "Disciplina",
                 icon = Icons.Filled.Home,
                 iconSelected = Icons.Outlined.Home,
-                route = RouterSet.OverviewPresentation.name
+                route = RouterSet.ClassCoursePresentation.name
             ),
             BottomNavItem(
                 label = "Aulas",
                 icon = Icons.Filled.Settings,
                 iconSelected = Icons.Outlined.Settings,
-                route = RouterSet.ClassTopicScreen.name
+                route = RouterSet.ClassTopicPresentation.name
             )
         )
 
@@ -171,7 +170,7 @@ fun NavHostContainer(
 ) {
     NavHost(
         navController = navController,
-        startDestination = RouterSet.ClassTopicScreen.name,
+        startDestination = RouterSet.ClassTopicPresentation.name,
         modifier = Modifier.padding(paddingValues = padding),
         builder = {
             composable(RouterSet.OverviewPresentation.name) {
@@ -180,8 +179,11 @@ fun NavHostContainer(
             composable(RouterSet.MorePresentation.name) {
                 ConfigurationPresentation()
             }
-            composable(RouterSet.ClassTopicScreen.name) {
+            composable(RouterSet.ClassTopicPresentation.name) {
                 ClassTopicPresentation()
+            }
+            composable(RouterSet.ClassCoursePresentation.name) {
+                ClassCoursePresentation()
             }
         }
     )
