@@ -23,4 +23,15 @@ object LookDefault {
         val medium = 24.sp
         val large = 36.sp
     }
+
+
+    object Size {
+        val small = 75.dp
+        val big = 200.dp
+    }
+
+    object TimeDuration {
+        val veryShort = 500
+        val normal = 3000
+    }
 }

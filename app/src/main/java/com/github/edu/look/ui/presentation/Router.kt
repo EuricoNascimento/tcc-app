@@ -47,17 +47,18 @@ import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentati
 import com.github.edu.look.ui.theme.LookDefault
 
 enum class RouterSet(val title: String) {
-    OverviewPresentation("Turmas"),
     ClassTopicPresentation("Aulas"),
     MorePresentation("Mais"),
-    ClassCoursePresentation("Disciplina")
+    ClassCoursePresentation("Disciplina"),
+    LoginPresentation("Login"),
+    LoadingPresentation("Loading")
 }
 
 data class BottomNavItem(
     val label: String,
     val icon: ImageVector,
     val iconSelected: ImageVector = icon,
-    val route:String,
+    val route: String,
 )
 
 
@@ -67,32 +68,40 @@ fun Router() {
 
     val navController = rememberNavController()
 
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     Scaffold(
         modifier = Modifier.background(MaterialTheme.colorScheme.tertiary),
         topBar = {
-            TopAppBar(
-                title = {
-                    ScaleText(
-                        text = stringResource(R.string.classTitle),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = LookDefault.FontSize.small
+            if(currentRoute != RouterSet.LoginPresentation.name
+                && currentRoute != RouterSet.LoadingPresentation.name) {
+                TopAppBar(
+                    title = {
+                        ScaleText(
+                            text = stringResource(R.string.classTitle),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = LookDefault.FontSize.small
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.back)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back))
-                    }
-                },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
                 )
-            )
+            }
         },
         floatingActionButton = {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
-            if (currentRoute != RouterSet.MorePresentation.name) {
+            if (currentRoute != RouterSet.LoginPresentation.name
+                && currentRoute != RouterSet.LoadingPresentation.name
+                && currentRoute != RouterSet.MorePresentation.name) {
                 FloatingActionButton(
                     onClick = { navController.navigate(RouterSet.MorePresentation.name) },
                     shape = MaterialTheme.shapes.large,
@@ -110,7 +119,10 @@ fun Router() {
             NavHostContainer(navController = navController, padding = padding)
         },
         bottomBar = {
-            BottomNavigationBar(navController = navController)
+            if (currentRoute != RouterSet.LoginPresentation.name
+                && currentRoute != RouterSet.LoadingPresentation.name) {
+                BottomNavigationBar(navController = navController)
+            }
         }
     )
 }
@@ -122,7 +134,7 @@ fun BottomNavigationBar(
     BottomNavigation(
         modifier = Modifier
             .defaultMinSize(minHeight = LookDefault.Padding.ultraLarge)
-    ){
+    ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
@@ -148,7 +160,7 @@ fun BottomNavigationBar(
                     .weight(1f, false),
                 selected = currentRoute == navItem.route,
                 onClick = {
-                    if(currentRoute == navItem.route)
+                    if (currentRoute == navItem.route)
                         return@BottomNavigationItem
                     navController.navigate(route = navItem.route)
                 },
@@ -162,7 +174,6 @@ fun BottomNavigationBar(
 }
 
 
-
 @Composable
 fun NavHostContainer(
     navController: NavHostController,
@@ -170,11 +181,14 @@ fun NavHostContainer(
 ) {
     NavHost(
         navController = navController,
-        startDestination = RouterSet.ClassTopicPresentation.name,
+        startDestination = RouterSet.LoadingPresentation.name,
         modifier = Modifier.padding(paddingValues = padding),
         builder = {
-            composable(RouterSet.OverviewPresentation.name) {
-                OverviewPresentation(navController)
+            composable(RouterSet.LoadingPresentation.name) {
+                LoadingPresentation(navController, RouterSet.LoginPresentation)
+            }
+            composable(RouterSet.LoginPresentation.name) {
+                LoginPresentation(navController)
             }
             composable(RouterSet.MorePresentation.name) {
                 ConfigurationPresentation()
@@ -217,6 +231,7 @@ fun BottomNavigation(
         },
     )
 }
+
 @Composable
 fun BottomNavigationItem(
     icon: ImageVector,
@@ -229,7 +244,7 @@ fun BottomNavigationItem(
 
 
     val colorsSchemaSelected =
-        if(selected)
+        if (selected)
             MaterialTheme.colorScheme.secondary
         else
             MaterialTheme.colorScheme.primary
@@ -244,20 +259,20 @@ fun BottomNavigationItem(
             .background(colorsSchemaSelected)
     ) {
         Icon(
-            imageVector = if(selected && iconSelected != null)  iconSelected else icon,
+            imageVector = if (selected && iconSelected != null) iconSelected else icon,
             contentDescription = null,
             modifier = Modifier
                 .clip(MaterialTheme.shapes.extraLarge)
                 .background(color = colorsSchemaSelected)
 
         )
-        if(label.isNotBlank()) {
+        if (label.isNotBlank()) {
             ScaleText(
                 text = label,
                 fontSize = LookDefault.FontSize.medium,
                 color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.bodyMedium,
-                fontWeight = if(selected) FontWeight.Bold else FontWeight.Normal,
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
                 maxLines = 1
             )
         }

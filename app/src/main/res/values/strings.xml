@@ -9,4 +9,9 @@
     <string name="your_photo">Foto do aluno %s</string>
     <string name="comunication">Comunicados</string>
     <string name="homework">Atividades</string>
+    <string name="login_logo">Logo do aplicativo da tela de Login</string>
+    <string name="loading_logo">Carregando</string>
+    <string name="welcome">Seja bem-vindo!</string>
+    <string name="begin_to_study">Comece os estudos com 1 clique</string>
+    <string name="login_with_google">Entrar com o Google</string>
 </resources>
