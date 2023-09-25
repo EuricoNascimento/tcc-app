@@ -2,7 +2,9 @@ package com.github.edu.look.ui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -13,10 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.sp
-import com.github.edu.look.R
 import com.github.edu.look.ui.theme.LookDefault
 
 @Composable
@@ -24,6 +23,9 @@ fun TopicCard(
     title: String,
     subTitle: String? = null,
     modifier: Modifier = Modifier,
+    contentModifier: Modifier = Modifier,
+    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     onClick: () -> Unit = {},
     border: BorderStroke = BorderStroke(LookDefault.Stroke.none, MaterialTheme.colorScheme.onPrimary),
     colors: CardColors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
@@ -37,10 +39,12 @@ fun TopicCard(
         border = border,
         colors = colors
     ) {
-        Column(modifier = Modifier
+        Column(modifier = contentModifier
             .semantics(mergeDescendants = true) {}
-            .fillMaxWidth()
-            .padding(all = LookDefault.Padding.middle)
+            .fillMaxSize()
+            .padding(all = LookDefault.Padding.middle),
+            verticalArrangement = verticalArrangement,
+            horizontalAlignment = horizontalAlignment
         ) {
             ScaleText(
                 text = title,

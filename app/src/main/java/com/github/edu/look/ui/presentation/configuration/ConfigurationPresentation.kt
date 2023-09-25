@@ -3,11 +3,13 @@ package com.github.edu.look.ui.presentation.configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
@@ -23,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,10 +54,15 @@ fun ConfigurationPresentation(
         Icon(
             imageVector = Icons.Filled.Person,
             contentDescription = stringResource(R.string.your_photo, "Fulano de Tal"),
-            modifier = Modifier.size(LookDefault.Padding.ultraLarge)
+            modifier = Modifier
+                .size(LookDefault.Padding.ultraLarge)
+                .clip(CircleShape)
+                .background(color = Color.Black)
+
         )
         ScaleText(
             text = "Aluno Fulano de Tal",
+            textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onPrimary,
             fontSize = LookDefault.FontSize.medium,
             fontWeight = FontWeight.Bold
@@ -83,7 +91,9 @@ fun ConfigurationPresentation(
         }
         Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.extraLarge))
         Button(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = LookDefault.Padding.large),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = LookDefault.Padding.large),
             onClick = { /*TODO*/ },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary),
             shape = MaterialTheme.shapes.extraLarge
