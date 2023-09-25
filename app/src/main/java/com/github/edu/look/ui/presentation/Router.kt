@@ -70,12 +70,13 @@ fun Router() {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val ignoredScreen = listOf(RouterSet.LoginPresentation.name, RouterSet.LoadingPresentation.name)
+
 
     Scaffold(
         modifier = Modifier.background(MaterialTheme.colorScheme.tertiary),
         topBar = {
-            if(currentRoute != RouterSet.LoginPresentation.name
-                && currentRoute != RouterSet.LoadingPresentation.name) {
+            if(!ignoredScreen.contains(currentRoute)) {
                 TopAppBar(
                     title = {
                         ScaleText(
@@ -99,8 +100,7 @@ fun Router() {
             }
         },
         floatingActionButton = {
-            if (currentRoute != RouterSet.LoginPresentation.name
-                && currentRoute != RouterSet.LoadingPresentation.name
+            if (!ignoredScreen.contains(currentRoute)
                 && currentRoute != RouterSet.MorePresentation.name) {
                 FloatingActionButton(
                     onClick = { navController.navigate(RouterSet.MorePresentation.name) },
@@ -119,8 +119,7 @@ fun Router() {
             NavHostContainer(navController = navController, padding = padding)
         },
         bottomBar = {
-            if (currentRoute != RouterSet.LoginPresentation.name
-                && currentRoute != RouterSet.LoadingPresentation.name) {
+            if (!ignoredScreen.contains(currentRoute)) {
                 BottomNavigationBar(navController = navController)
             }
         }
