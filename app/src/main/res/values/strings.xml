@@ -7,7 +7,7 @@
     <string name="size_text">Escala da fonte: %.2fx</string>
     <string name="exit_account">Sair da conta</string>
     <string name="your_photo">Foto do aluno %s</string>
-    <string name="comunication">Comunicados</string>
+    <string name="communication">Comunicados</string>
     <string name="homework">Atividades</string>
     <string name="login_logo">Logo do aplicativo da tela de Login</string>
     <string name="loading_logo">Carregando</string>
