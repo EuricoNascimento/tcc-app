@@ -45,6 +45,7 @@ import com.github.edu.look.R
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentation
 import com.github.edu.look.ui.theme.LookDefault
+import com.github.edu.look.ui.viewmodel.classtopic.CommunicationViewModel
 
 enum class RouterSet(val title: String) {
     ClassTopicPresentation("Aulas"),
@@ -180,6 +181,7 @@ fun NavHostContainer(
     navController: NavHostController,
     padding: PaddingValues,
 ) {
+    val communicationViewModel  = CommunicationViewModel()
     NavHost(
         navController = navController,
         startDestination = RouterSet.LoadingPresentation.name,
@@ -201,7 +203,7 @@ fun NavHostContainer(
                 ClassCoursePresentation()
             }
             composable(RouterSet.CommunicationPresentation.name) {
-                CommunicationPresentation()
+                CommunicationPresentation(communicationViewModel,navController, RouterSet.CommunicationPresentation)
             }
         }
     )

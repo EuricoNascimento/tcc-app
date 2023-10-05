@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 
 import com.github.edu.look.R
 
@@ -27,10 +28,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun CommunicationPresentation(
-    classTopicViewModel: CommunicationViewModel = viewModel()
+    communicationViewModel: CommunicationViewModel = viewModel(),
+    navController: NavHostController,
+    routerSet: RouterSet
 ) {
-    val communication by classTopicViewModel.uiState.collectAsState()
+    val communication by communicationViewModel.uiState.collectAsState()
    CommunicationItems(communication)
+    navController.navigate(routerSet.name)
 
 }
 
