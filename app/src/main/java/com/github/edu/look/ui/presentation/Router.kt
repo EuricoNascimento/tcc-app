@@ -51,7 +51,8 @@ enum class RouterSet(val title: String) {
     MorePresentation("Mais"),
     ClassCoursePresentation("Disciplina"),
     LoginPresentation("Login"),
-    LoadingPresentation("Loading")
+    LoadingPresentation("Loading"),
+    CommunicationPresentation("Comunicados")
 }
 
 data class BottomNavItem(
@@ -198,6 +199,9 @@ fun NavHostContainer(
             }
             composable(RouterSet.ClassCoursePresentation.name) {
                 ClassCoursePresentation()
+            }
+            composable(RouterSet.CommunicationPresentation.name) {
+                CommunicationPresentation()
             }
         }
     )
