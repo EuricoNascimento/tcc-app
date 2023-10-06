@@ -42,9 +42,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.github.edu.look.R
+import com.github.edu.look.data.classTexts.ClassTexts
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentation
 import com.github.edu.look.ui.theme.LookDefault
+import com.github.edu.look.ui.viewmodel.classTexts.ClassTextsViewModel
 import com.github.edu.look.ui.viewmodel.classtopic.CommunicationViewModel
 
 enum class RouterSet(val title: String) {
@@ -53,7 +55,8 @@ enum class RouterSet(val title: String) {
     ClassCoursePresentation("Disciplina"),
     LoginPresentation("Login"),
     LoadingPresentation("Loading"),
-    CommunicationPresentation("Comunicados")
+    CommunicationPresentation("Comunicados"),
+    ClassTextsPresentation("Textos")
 }
 
 data class BottomNavItem(
@@ -182,6 +185,8 @@ fun NavHostContainer(
     padding: PaddingValues,
 ) {
     val communicationViewModel  = CommunicationViewModel()
+    val classTextsViewModel  = ClassTextsViewModel()
+
     NavHost(
         navController = navController,
         startDestination = RouterSet.LoadingPresentation.name,
@@ -205,6 +210,12 @@ fun NavHostContainer(
             composable(RouterSet.CommunicationPresentation.name) {
                 CommunicationPresentation(communicationViewModel,navController, RouterSet.CommunicationPresentation)
             }
+
+            composable(RouterSet.ClassTextsPresentation.name) {
+                ClassTextsPresentation(classTextsViewModel,navController, RouterSet.ClassTextsPresentation)
+            }
+
+
         }
     )
 }
