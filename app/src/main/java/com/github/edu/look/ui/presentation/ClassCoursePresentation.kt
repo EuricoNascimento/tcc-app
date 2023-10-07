@@ -21,7 +21,7 @@ fun ClassCoursePresentation() {
     Column (modifier = Modifier.fillMaxSize()){
         Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.large))
         TopicCard(
-            title = stringResource(R.string.comunication),
+            title = stringResource(R.string.communication),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
             colorTitle = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier
