@@ -29,12 +29,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun CommunicationPresentation(
     communicationViewModel: CommunicationViewModel = viewModel(),
-    navController: NavHostController,
-    routerSet: RouterSet
+    navController: NavHostController
 ) {
     val communication by communicationViewModel.uiState.collectAsState()
    CommunicationItems(communication)
-    navController.navigate(routerSet.name)
 
 }
 

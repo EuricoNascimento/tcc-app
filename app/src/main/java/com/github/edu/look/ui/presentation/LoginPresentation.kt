@@ -75,7 +75,7 @@ fun GoogleButton(
             .padding(horizontal = LookDefault.Padding.extraLarge),
         color = MaterialTheme.colorScheme.onPrimary,
         shape = MaterialTheme.shapes.large,
-        onClick = { navController.navigate(RouterSet.ClassCoursePresentation.name) }
+        onClick = { navController.navigate(RouterSet.CoursePresentation.name) }
     ) {
         Row (
             modifier = Modifier.padding(all = LookDefault.Padding.large),

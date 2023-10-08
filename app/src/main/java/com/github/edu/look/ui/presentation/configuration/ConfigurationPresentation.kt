@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.github.edu.look.R
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.theme.LookDefault
@@ -39,6 +40,7 @@ import com.github.edu.look.ui.viewmodel.configuration.SharedConfigurationViewMod
 
 @Composable
 fun ConfigurationPresentation(
+    navController: NavController,
     sharedConfigurationViewModel: SharedConfigurationViewModel = hiltViewModel()
 ) {
 

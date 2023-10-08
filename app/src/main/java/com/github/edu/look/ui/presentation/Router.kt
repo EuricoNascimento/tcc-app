@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
@@ -41,11 +43,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.github.edu.look.R
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentation
 import com.github.edu.look.ui.theme.LookDefault
-import com.github.edu.look.ui.viewmodel.classtopic.CommunicationViewModel
 
 enum class RouterSet(val title: String) {
     ClassTopicPresentation("Aulas"),
@@ -53,15 +55,11 @@ enum class RouterSet(val title: String) {
     ClassCoursePresentation("Disciplina"),
     LoginPresentation("Login"),
     LoadingPresentation("Loading"),
-    CommunicationPresentation("Comunicados")
+    CommunicationPresentation("Comunicados"),
+    HomeworkQuestionPresentation("Atividade"),
+    HomeworkAnswersPresentation("Respostas"),
+    CoursePresentation("Turmas")
 }
-
-data class BottomNavItem(
-    val label: String,
-    val icon: ImageVector,
-    val iconSelected: ImageVector = icon,
-    val route: String,
-)
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,31 +72,40 @@ fun Router() {
     val currentRoute = navBackStackEntry?.destination?.route
     val ignoredScreen = listOf(RouterSet.LoginPresentation.name, RouterSet.LoadingPresentation.name)
 
-
     Scaffold(
         modifier = Modifier.background(MaterialTheme.colorScheme.tertiary),
         topBar = {
             if(!ignoredScreen.contains(currentRoute)) {
-                TopAppBar(
-                    title = {
-                        ScaleText(
-                            text = stringResource(R.string.classTitle),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontSize = LookDefault.FontSize.small
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.back)
-                            )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(LookDefault.Size.normal)
+                        .background(MaterialTheme.colorScheme.primary),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = { navController.popBackStack() }, modifier = Modifier.size(LookDefault.Size.small)) {
+                            Icon(imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.back))
                         }
-                    },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                        ScaleText(
+                            text = stringResource(R.string.back),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = LookDefault.FontSize.medium
+                        )
+                    }
+                    val route = RouterSet.values().firstOrNull {it.name == currentRoute}
+                    ScaleText(
+                        text = route?.title ?: "",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = LookDefault.FontSize.medium,
+                        modifier = Modifier.padding(end = LookDefault.Padding.middle)
                     )
-                )
+                }
             }
         },
         floatingActionButton = {
@@ -119,68 +126,15 @@ fun Router() {
         },
         content = { padding ->
             NavHostContainer(navController = navController, padding = padding)
-        },
-        bottomBar = {
-            if (!ignoredScreen.contains(currentRoute)) {
-                BottomNavigationBar(navController = navController)
-            }
         }
     )
 }
-
-@Composable
-fun BottomNavigationBar(
-    navController: NavHostController
-) {
-    BottomNavigation(
-        modifier = Modifier
-            .defaultMinSize(minHeight = LookDefault.Padding.ultraLarge)
-    ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-
-        val bottomNavItems = listOf(
-            BottomNavItem(
-                label = "Disciplina",
-                icon = Icons.Filled.Home,
-                iconSelected = Icons.Outlined.Home,
-                route = RouterSet.ClassCoursePresentation.name
-            ),
-            BottomNavItem(
-                label = "Aulas",
-                icon = Icons.Filled.Settings,
-                iconSelected = Icons.Outlined.Settings,
-                route = RouterSet.ClassTopicPresentation.name
-            )
-        )
-
-        bottomNavItems.forEach { navItem ->
-            BottomNavigationItem(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f, false),
-                selected = currentRoute == navItem.route,
-                onClick = {
-                    if (currentRoute == navItem.route)
-                        return@BottomNavigationItem
-                    navController.navigate(route = navItem.route)
-                },
-                icon = navItem.icon,
-                iconSelected = navItem.iconSelected,
-                label = navItem.label,
-            )
-        }
-
-    }
-}
-
 
 @Composable
 fun NavHostContainer(
     navController: NavHostController,
     padding: PaddingValues,
 ) {
-    val communicationViewModel  = CommunicationViewModel()
     NavHost(
         navController = navController,
         startDestination = RouterSet.LoadingPresentation.name,
@@ -193,93 +147,39 @@ fun NavHostContainer(
                 LoginPresentation(navController)
             }
             composable(RouterSet.MorePresentation.name) {
-                ConfigurationPresentation()
+                ConfigurationPresentation(navController)
             }
-            composable(RouterSet.ClassTopicPresentation.name) {
-                ClassTopicPresentation()
+            composable(RouterSet.CoursePresentation.name) {
+                CoursePresentation(navController = navController)
             }
-            composable(RouterSet.ClassCoursePresentation.name) {
-                ClassCoursePresentation()
+            composable("${RouterSet.ClassCoursePresentation.name}/{classroomId}") {
+                ClassCoursePresentation(
+                    navController = navController,
+                    classroomId = it.arguments?.getLong("classroomId", 0L))
+            }
+            composable("${RouterSet.ClassTopicPresentation.name}/{classroomId}?type={type}") {
+                ClassTopicPresentation(
+                    navController = navController,
+                    classroomId = it.arguments?.getLong("classroomId", 0L),
+                    type = it.arguments?.getString("type")
+                )
+            }
+            composable(route = "${RouterSet.HomeworkQuestionPresentation.name}/" +
+                    "{classroomId}/{topicId}?questionId={questionId}",
+                arguments = listOf(navArgument("questionId") { defaultValue = 0L })) {
+                HomeworkQuestionPresentation(
+                    navController = navController,
+                    classroomId = it.arguments?.getLong("classroomId", 0L),
+                    homeworkId = it.arguments?.getLong("topicId", 0L),
+                    questionId = it.arguments?.getLong("questionId")
+                )
+            }
+            composable(RouterSet.HomeworkAnswersPresentation.name) {
+                HomeworkAnswersPresentation(navController)
             }
             composable(RouterSet.CommunicationPresentation.name) {
-                CommunicationPresentation(communicationViewModel,navController, RouterSet.CommunicationPresentation)
+                CommunicationPresentation(navController = navController)
             }
         }
     )
-}
-
-data class MenuItem(
-    val icon: ImageVector,
-    val index: Int,
-    val label: String = "",
-    val selected: Boolean = false,
-    val perform: (NavController) -> Unit = {}
-)
-
-@Composable
-fun BottomNavigation(
-    modifier: Modifier = Modifier,
-    content: @Composable (RowScope.() -> Unit),
-) {
-    BottomAppBar(
-        contentColor = MaterialTheme.colorScheme.onPrimary,
-        containerColor = MaterialTheme.colorScheme.primary,
-        modifier = modifier,
-        content = {
-            Row(
-                content = content,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround
-            )
-        },
-    )
-}
-@Composable
-fun BottomNavigationItem(
-    icon: ImageVector,
-    label: String,
-    iconSelected: ImageVector? = null,
-    selected: Boolean = false,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-) {
-
-
-    val colorsSchemaSelected =
-        if (selected)
-            MaterialTheme.colorScheme.secondary
-        else
-            MaterialTheme.colorScheme.primary
-
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .semantics(mergeDescendants = true) {}
-            .background(colorsSchemaSelected)
-    ) {
-        Icon(
-            imageVector = if (selected && iconSelected != null) iconSelected else icon,
-            contentDescription = null,
-            modifier = Modifier
-                .clip(MaterialTheme.shapes.extraLarge)
-                .background(color = colorsSchemaSelected)
-
-        )
-        if (label.isNotBlank()) {
-            ScaleText(
-                text = label,
-                fontSize = LookDefault.FontSize.medium,
-                color = MaterialTheme.colorScheme.onPrimary,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-                maxLines = 1
-            )
-        }
-    }
-
 }

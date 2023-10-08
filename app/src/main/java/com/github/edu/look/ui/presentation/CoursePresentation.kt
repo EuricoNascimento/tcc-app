@@ -17,32 +17,28 @@ import com.github.edu.look.R
 import com.github.edu.look.data.classtopic.ClassTopic
 import com.github.edu.look.ui.component.TopicCard
 import com.github.edu.look.ui.theme.LookDefault
+import com.github.edu.look.ui.viewmodel.CourseViewModel
 import com.github.edu.look.ui.viewmodel.classtopic.ClassTopicViewModel
 
 @Composable
-fun ClassTopicPresentation(
+fun CoursePresentation(
     navController: NavController,
-    classroomId: Long?,
-    type: String?,
-    classTopicViewModel: ClassTopicViewModel = viewModel(),
+    courseViewModel: CourseViewModel = viewModel(),
 ) {
-    val topics by classTopicViewModel.uiState.collectAsState()
-    if (type.isNullOrEmpty() || classroomId == null) {
-        navController.popBackStack()
-        return
-    }
-    val routeName: String = RouterSet.valueOf(type).name
+    val classrooms by courseViewModel.uiState.collectAsState()
     Surface(
         modifier = Modifier
             .fillMaxSize()
     ) {
         LazyColumn {
-            items(items = topics) { item ->
+            items(items = classrooms) { item ->
                 TopicCard(
-                    title = item.topic,
-                    subTitle = stringResource(id = R.string.posted, item.date),
+                    title = item.name,
+                    subTitle = item.teacherName,
                     border = BorderStroke(LookDefault.Stroke.small, MaterialTheme.colorScheme.onPrimary),
-                    onClick = { navController.navigate("$routeName/$classroomId/${item.id}") }
+                    onClick = {
+                        navController.navigate("${RouterSet.ClassCoursePresentation.name}/${item.id}")
+                    }
                 )
             }
         }

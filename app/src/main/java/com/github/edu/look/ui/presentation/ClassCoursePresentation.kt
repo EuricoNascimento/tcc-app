@@ -11,12 +11,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
 import com.github.edu.look.R
+import com.github.edu.look.data.classroom.Classroom
 import com.github.edu.look.ui.component.TopicCard
 import com.github.edu.look.ui.theme.LookDefault
 
 @Composable
-fun ClassCoursePresentation() {
+fun ClassCoursePresentation(
+    navController: NavController,
+    classroomId: Long?
+    ) {
 
     Column (modifier = Modifier.fillMaxSize()){
         Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.large))
@@ -27,7 +32,9 @@ fun ClassCoursePresentation() {
             modifier = Modifier
                 .weight(1f)
                 .padding(all = LookDefault.Padding.large),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            onClick = {navController.navigate( "${RouterSet.ClassTopicPresentation.name}/" +
+                    "$classroomId?type=${RouterSet.CommunicationPresentation.name}" )}
         )
 
         TopicCard(
@@ -37,7 +44,9 @@ fun ClassCoursePresentation() {
             modifier = Modifier
                 .weight(1f)
                 .padding(all = LookDefault.Padding.large),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+                    onClick = {navController.navigate( "${RouterSet.ClassTopicPresentation.name}/" +
+                            "$classroomId?type=${RouterSet.ClassTopicPresentation.name}" )}
         )
 
         TopicCard(
@@ -47,7 +56,9 @@ fun ClassCoursePresentation() {
             modifier = Modifier
                 .weight(1f)
                 .padding(all = LookDefault.Padding.large),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            onClick = {navController.navigate( "${RouterSet.ClassTopicPresentation.name}/" +
+                    "$classroomId?type=${RouterSet.HomeworkQuestionPresentation.name}" )}
         )
         Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.large))
     }

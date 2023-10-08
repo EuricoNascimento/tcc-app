@@ -2,7 +2,7 @@
     <string name="app_name">Look</string>
     <string name="posted">Postado em %s</string>
     <string name="classTitle">Aula</string>
-    <string name="back">voltar</string>
+    <string name="back">Voltar</string>
     <string name="settings">Configuração</string>
     <string name="size_text">Escala da fonte: %.2fx</string>
     <string name="exit_account">Sair da conta</string>
@@ -14,4 +14,8 @@
     <string name="welcome">Seja bem-vindo!</string>
     <string name="begin_to_study">Comece os estudos com 1 clique</string>
     <string name="login_with_google">Entrar com o Google</string>
+    <string name="question">Questão %s</string>
+    <string name="next">Avançar</string>
+    <string name="finish">Concluir</string>
+    <string name="send_homework">Enviar atividade</string>
 </resources>
