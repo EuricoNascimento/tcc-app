@@ -40,7 +40,7 @@ fun LoginPresentation(
             painter = painterResource(R.drawable.logo_look_with_name),
             contentDescription = stringResource(R.string.login_logo),
             modifier = Modifier
-                .size(LookDefault.Size.big)
+                .size(LookDefault.Size.extraLarge)
                 .padding(vertical = LookDefault.Padding.extraLarge),
             tint = Color.Unspecified
         )
@@ -75,7 +75,7 @@ fun GoogleButton(
             .padding(horizontal = LookDefault.Padding.extraLarge),
         color = MaterialTheme.colorScheme.onPrimary,
         shape = MaterialTheme.shapes.large,
-        onClick = { navController.navigate(RouterSet.ClassCoursePresentation.name) }
+        onClick = { navController.navigate(RouterSet.CoursePresentation.name) }
     ) {
         Row (
             modifier = Modifier.padding(all = LookDefault.Padding.large),

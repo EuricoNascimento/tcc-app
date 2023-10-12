@@ -27,11 +27,13 @@ object LookDefault {
 
     object Size {
         val small = 75.dp
-        val big = 200.dp
+        val normal = 150.dp
+        val large = 165.dp
+        val extraLarge = 200.dp
     }
 
     object TimeDuration {
-        val veryShort = 500
-        val normal = 3000
+        const val veryShort = 500
+        const val normal = 1500
     }
 }
