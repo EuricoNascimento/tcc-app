@@ -55,7 +55,8 @@ fun HomeworkAnswersPresentation(
                                     + "/${viewModel.classroomId}"
                         )
                     }
-                    .background(color = MaterialTheme.colorScheme.onPrimary),
+                    .background(color = MaterialTheme.colorScheme.onPrimary)
+                    .padding(all = LookDefault.Padding.extraLarge),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -66,7 +67,7 @@ fun HomeworkAnswersPresentation(
                 )
             }
         },
-        modifier = Modifier.background(color = MaterialTheme.colorScheme.secondary)
+        containerColor = MaterialTheme.colorScheme.secondary
     ) { padding ->
         val items = viewModel.getQuestionWithAnswer()
         LazyColumn(
