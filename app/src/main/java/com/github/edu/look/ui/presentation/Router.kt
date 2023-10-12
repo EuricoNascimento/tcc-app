@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
@@ -37,6 +38,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -48,6 +50,7 @@ import com.github.edu.look.R
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentation
 import com.github.edu.look.ui.theme.LookDefault
+import com.github.edu.look.ui.viewmodel.homework.HomeworkViewModel
 
 enum class RouterSet(val title: String) {
     ClassTopicPresentation("Aulas"),
@@ -69,47 +72,79 @@ fun Router() {
     val navController = rememberNavController()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    var currentRoute = navBackStackEntry?.destination?.route ?: ""
     val ignoredScreen = listOf(RouterSet.LoginPresentation.name, RouterSet.LoadingPresentation.name)
+    val alteredScreen = listOf(
+        RouterSet.HomeworkAnswersPresentation.name,
+        RouterSet.HomeworkQuestionPresentation.name
+    )
+
+    if (currentRoute.contains('/')) {
+        val listRouter = currentRoute.split('/')
+        currentRoute = listRouter[0]
+    }
 
     Scaffold(
         modifier = Modifier.background(MaterialTheme.colorScheme.tertiary),
         topBar = {
             if(!ignoredScreen.contains(currentRoute)) {
-
+                var backgroundColor = MaterialTheme.colorScheme.primary
+                var letterColor = MaterialTheme.colorScheme.onPrimary
+                if (alteredScreen.contains(currentRoute)) {
+                    backgroundColor = MaterialTheme.colorScheme.onPrimary
+                    letterColor = MaterialTheme.colorScheme.secondary
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(LookDefault.Size.normal)
-                        .background(MaterialTheme.colorScheme.primary),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { navController.popBackStack() }, modifier = Modifier.size(LookDefault.Size.small)) {
-                            Icon(imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.back))
-                        }
-                        ScaleText(
-                            text = stringResource(R.string.back),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = LookDefault.FontSize.medium
+                        .clip(
+                            RoundedCornerShape(
+                                bottomEnd = LookDefault.Padding.extraLarge,
+                                bottomStart = LookDefault.Padding.extraLarge
+                            )
                         )
+                        .background(backgroundColor),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement =
+                    if (currentRoute != RouterSet.HomeworkAnswersPresentation.name)
+                        Arrangement.SpaceBetween
+                    else
+                        Arrangement.Center
+                ) {
+                    if (currentRoute != RouterSet.HomeworkAnswersPresentation.name) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(horizontal = LookDefault.Padding.large)
+                                .clickable { navController.popBackStack() }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.back),
+                                tint = MaterialTheme.colorScheme.tertiary
+                            )
+                            ScaleText(
+                                text = stringResource(R.string.back),
+                                color = letterColor,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = LookDefault.FontSize.medium
+                            )
+                        }
                     }
                     val route = RouterSet.values().firstOrNull {it.name == currentRoute}
                     ScaleText(
                         text = route?.title ?: "",
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = letterColor,
                         fontWeight = FontWeight.Bold,
                         fontSize = LookDefault.FontSize.medium,
-                        modifier = Modifier.padding(end = LookDefault.Padding.middle)
+                        modifier = Modifier.padding(horizontal = LookDefault.Padding.large)
                     )
                 }
             }
         },
         floatingActionButton = {
-            if (!ignoredScreen.contains(currentRoute)
+            if (!ignoredScreen.contains(currentRoute) && !alteredScreen.contains(currentRoute)
                 && currentRoute != RouterSet.MorePresentation.name) {
                 FloatingActionButton(
                     onClick = { navController.navigate(RouterSet.MorePresentation.name) },
@@ -126,7 +161,8 @@ fun Router() {
         },
         content = { padding ->
             NavHostContainer(navController = navController, padding = padding)
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.secondary
     )
 }
 
@@ -135,10 +171,14 @@ fun NavHostContainer(
     navController: NavHostController,
     padding: PaddingValues,
 ) {
+    val viewModel: HomeworkViewModel = viewModel()
+
     NavHost(
         navController = navController,
         startDestination = RouterSet.LoadingPresentation.name,
-        modifier = Modifier.padding(paddingValues = padding),
+        modifier = Modifier
+            .padding(paddingValues = padding)
+            .background(color = MaterialTheme.colorScheme.tertiary),
         builder = {
             composable(RouterSet.LoadingPresentation.name) {
                 LoadingPresentation(navController, RouterSet.LoginPresentation)
@@ -165,20 +205,25 @@ fun NavHostContainer(
                 )
             }
             composable(route = "${RouterSet.HomeworkQuestionPresentation.name}/" +
-                    "{classroomId}/{topicId}?questionId={questionId}",
-                arguments = listOf(navArgument("questionId") { defaultValue = 0L })) {
+                    "{classroomId}/{topicId}?questionId={questionId}?answer={answer}",
+                arguments = listOf(
+                    navArgument("questionId") { defaultValue = 0L },
+                    navArgument("answer") { defaultValue = "" }
+                )) {
                 HomeworkQuestionPresentation(
                     navController = navController,
                     classroomId = it.arguments?.getLong("classroomId", 0L),
                     homeworkId = it.arguments?.getLong("topicId", 0L),
-                    questionId = it.arguments?.getLong("questionId")
+                    questionId = it.arguments?.getLong("questionId"),
+                    answer = it.arguments?.getString("answer"),
+                    viewModel = viewModel
                 )
             }
             composable(RouterSet.HomeworkAnswersPresentation.name) {
-                HomeworkAnswersPresentation(navController)
-            }
-            composable(RouterSet.CommunicationPresentation.name) {
-                CommunicationPresentation(navController = navController)
+                HomeworkAnswersPresentation(
+                    navController = navController,
+                    viewModel = viewModel
+                )
             }
         }
     )

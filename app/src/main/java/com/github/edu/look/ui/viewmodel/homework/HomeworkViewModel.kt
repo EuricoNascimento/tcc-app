@@ -1,19 +1,21 @@
 package com.github.edu.look.ui.viewmodel.homework
 
-import androidx.compose.ui.unit.max
 import androidx.lifecycle.ViewModel
-import com.github.edu.look.data.classtopic.ClassTopic
 import com.github.edu.look.data.homework.Homework
 import com.github.edu.look.data.homework.Question
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlin.math.min
 
-class HomeworkQuestionViewModel : ViewModel() {
+class HomeworkViewModel : ViewModel() {
     private var _uiState = MutableStateFlow(Homework())
     val uiState get() = _uiState.asStateFlow()
     private val answers: MutableMap<Long, String> = mutableMapOf()
     private var question = listOf<Question>()
+    var questionNumber = 1
+    var classroomId: Long? = null
+    var homeworkId: Long? = null
+
     init {
         question = listOf(
             Question(
@@ -51,6 +53,11 @@ class HomeworkQuestionViewModel : ViewModel() {
     fun isLastQuestion(question: Question): Boolean {
         return uiState.value.question.last().id == question.id
     }
+
+    fun wasAnsweredQuestion(id: Long): Boolean {
+        return answers.keys.contains(id)
+    }
+
     fun saveAnswer(idQuestion: Long, answer: String) {
         answers[idQuestion] = answer
     }

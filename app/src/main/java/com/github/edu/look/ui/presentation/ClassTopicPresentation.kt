@@ -1,6 +1,7 @@
 package com.github.edu.look.ui.presentation
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -32,19 +33,18 @@ fun ClassTopicPresentation(
         return
     }
     val routeName: String = RouterSet.valueOf(type).name
-    Surface(
+    LazyColumn (
         modifier = Modifier
             .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.secondary)
     ) {
-        LazyColumn {
-            items(items = topics) { item ->
-                TopicCard(
-                    title = item.topic,
-                    subTitle = stringResource(id = R.string.posted, item.date),
-                    border = BorderStroke(LookDefault.Stroke.small, MaterialTheme.colorScheme.onPrimary),
-                    onClick = { navController.navigate("$routeName/$classroomId/${item.id}") }
-                )
-            }
+        items(items = topics) { item ->
+            TopicCard(
+                title = item.topic,
+                subTitle = stringResource(id = R.string.posted, item.date),
+                border = BorderStroke(LookDefault.Stroke.small, MaterialTheme.colorScheme.onPrimary),
+                onClick = { navController.navigate("$routeName/$classroomId/${item.id}") }
+            )
         }
     }
 }

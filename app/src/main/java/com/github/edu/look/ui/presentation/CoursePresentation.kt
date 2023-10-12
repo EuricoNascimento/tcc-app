@@ -1,6 +1,7 @@
 package com.github.edu.look.ui.presentation
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,21 +27,20 @@ fun CoursePresentation(
     courseViewModel: CourseViewModel = viewModel(),
 ) {
     val classrooms by courseViewModel.uiState.collectAsState()
-    Surface(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-    ) {
-        LazyColumn {
-            items(items = classrooms) { item ->
-                TopicCard(
-                    title = item.name,
-                    subTitle = item.teacherName,
-                    border = BorderStroke(LookDefault.Stroke.small, MaterialTheme.colorScheme.onPrimary),
-                    onClick = {
-                        navController.navigate("${RouterSet.ClassCoursePresentation.name}/${item.id}")
-                    }
-                )
-            }
+            .background(color = MaterialTheme.colorScheme.secondary)
+    )  {
+        items(items = classrooms) { item ->
+            TopicCard(
+                title = item.name,
+                subTitle = item.teacherName,
+                border = BorderStroke(LookDefault.Stroke.small, MaterialTheme.colorScheme.onPrimary),
+                onClick = {
+                    navController.navigate("${RouterSet.ClassCoursePresentation.name}/${item.id}")
+                }
+            )
         }
     }
 }

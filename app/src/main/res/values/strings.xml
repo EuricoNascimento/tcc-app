@@ -14,7 +14,7 @@
     <string name="welcome">Seja bem-vindo!</string>
     <string name="begin_to_study">Comece os estudos com 1 clique</string>
     <string name="login_with_google">Entrar com o Google</string>
-    <string name="question">Questão %s</string>
+    <string name="question">Questão %s: %s</string>
     <string name="next">Avançar</string>
     <string name="finish">Concluir</string>
     <string name="send_homework">Enviar atividade</string>

@@ -1,6 +1,7 @@
 package com.github.edu.look.ui.presentation
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,7 +24,11 @@ fun ClassCoursePresentation(
     classroomId: Long?
     ) {
 
-    Column (modifier = Modifier.fillMaxSize()){
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.secondary)
+    ){
         Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.large))
         TopicCard(
             title = stringResource(R.string.communication),
