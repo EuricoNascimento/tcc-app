@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 
 import com.github.edu.look.data.classTexts.ClassTexts
+import com.github.edu.look.ui.component.ScaleText
 
 import com.github.edu.look.ui.theme.GreenLight
 import com.github.edu.look.ui.theme.LookDefault
@@ -58,7 +59,7 @@ fun ClassTextsItems(classTexts: List<ClassTexts>, modifier: Modifier = Modifier)
         ) {
             items(items = classTexts) { item ->
 
-                    Text(
+                    ScaleText(
                         text = item.textTitle,
                         fontSize = LookDefault.FontSize.medium,
                         color = GreenLight,
@@ -69,7 +70,7 @@ fun ClassTextsItems(classTexts: List<ClassTexts>, modifier: Modifier = Modifier)
                     )
 
 
-                    Text(
+                ScaleText(
                         text = "Postado em: " + item.publicationDateText,
                         fontSize = LookDefault.FontSize.small,
                         color = Color.Gray,
@@ -78,7 +79,7 @@ fun ClassTextsItems(classTexts: List<ClassTexts>, modifier: Modifier = Modifier)
 
                     )
 
-                    Text(
+                ScaleText(
                         text = item.textContent,
                         fontSize = LookDefault.FontSize.medium,
                         textAlign = TextAlign.Justify,
