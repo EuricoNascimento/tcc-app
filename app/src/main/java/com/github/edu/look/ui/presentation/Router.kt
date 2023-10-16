@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
@@ -35,12 +38,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.github.edu.look.R
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentation
@@ -53,7 +58,11 @@ enum class RouterSet(val title: String) {
     ClassCoursePresentation("Disciplina"),
     LoginPresentation("Login"),
     LoadingPresentation("Loading"),
-
+    CommunicationPresentation("Comunicados"),
+    ClassTextsPresentation("Textos"),
+    HomeworkQuestionPresentation("Atividade"),
+    HomeworkAnswersPresentation("Respostas"),
+    CoursePresentation("Turmas")
 }
 
 data class BottomNavItem(
@@ -181,11 +190,14 @@ fun NavHostContainer(
     navController: NavHostController,
     padding: PaddingValues,
 ) {
+    val viewModel: HomeworkViewModel = viewModel()
 
     NavHost(
         navController = navController,
         startDestination = RouterSet.LoadingPresentation.name,
-        modifier = Modifier.padding(paddingValues = padding),
+        modifier = Modifier
+            .padding(paddingValues = padding)
+            .background(color = MaterialTheme.colorScheme.tertiary),
         builder = {
             composable(RouterSet.LoadingPresentation.name) {
                 LoadingPresentation(navController, RouterSet.LoginPresentation)
@@ -194,19 +206,41 @@ fun NavHostContainer(
                 LoginPresentation(navController)
             }
             composable(RouterSet.MorePresentation.name) {
-                ConfigurationPresentation()
+                ConfigurationPresentation(navController)
             }
-            composable(RouterSet.ClassTopicPresentation.name) {
-                ClassTopicPresentation()
+            composable(RouterSet.CoursePresentation.name) {
+                CoursePresentation(navController = navController)
             }
-            composable(RouterSet.ClassCoursePresentation.name) {
-                ClassCoursePresentation()
+            composable("${RouterSet.ClassCoursePresentation.name}/{classroomId}") {
+                ClassCoursePresentation(
+                    navController = navController,
+                    classroomId = it.arguments?.getLong("classroomId", 0L)
+                )
             }
-
-
-
+            composable("${RouterSet.ClassTopicPresentation.name}/{classroomId}?type={type}") {
+                ClassTopicPresentation(
+                    navController = navController,
+                    classroomId = it.arguments?.getLong("classroomId", 0L),
+                    type = it.arguments?.getString("type")
+                )
+            }
+            composable(route = "${RouterSet.HomeworkQuestionPresentation.name}/" +
+                    "{classroomId}/{topicId}?questionId={questionId}?answer={answer}",
+                arguments = listOf(
+                    navArgument("questionId") { defaultValue = 0L },
+                    navArgument("answer") { defaultValue = "" }
+                )) {
+                HomeworkQuestionPresentation(
+                    navController = navController,
+                    classroomId = it.arguments?.getLong("classroomId", 0L),
+                    homeworkId = it.arguments?.getLong("topicId", 0L),
+                    questionId = it.arguments?.getLong("questionId"),
+                    answer = it.arguments?.getString("answer"),
+                    viewModel = viewModel
+                )
+            }
         }
-    )
+            )
 }
 
 data class MenuItem(
