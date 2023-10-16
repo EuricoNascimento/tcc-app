@@ -51,6 +51,8 @@ import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentation
 import com.github.edu.look.ui.theme.LookDefault
 
+import com.github.edu.look.ui.viewmodel.homework.HomeworkViewModel
+
 
 enum class RouterSet(val title: String) {
     ClassTopicPresentation("Aulas"),
@@ -65,13 +67,6 @@ enum class RouterSet(val title: String) {
     CoursePresentation("Turmas")
 }
 
-data class BottomNavItem(
-    val label: String,
-    val icon: ImageVector,
-    val iconSelected: ImageVector = icon,
-    val route: String,
-)
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,38 +75,79 @@ fun Router() {
     val navController = rememberNavController()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    var currentRoute = navBackStackEntry?.destination?.route ?: ""
+    val ignoredScreen = listOf(RouterSet.LoginPresentation.name, RouterSet.LoadingPresentation.name)
+    val alteredScreen = listOf(
+        RouterSet.HomeworkAnswersPresentation.name,
+        RouterSet.HomeworkQuestionPresentation.name
+    )
+
+    if (currentRoute.contains('/')) {
+        val listRouter = currentRoute.split('/')
+        currentRoute = listRouter[0]
+    }
 
     Scaffold(
         modifier = Modifier.background(MaterialTheme.colorScheme.tertiary),
         topBar = {
-            if(currentRoute != RouterSet.LoginPresentation.name
-                && currentRoute != RouterSet.LoadingPresentation.name) {
-                TopAppBar(
-                    title = {
-                        ScaleText(
-                            text = stringResource(R.string.classTitle),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontSize = LookDefault.FontSize.small
+            if(!ignoredScreen.contains(currentRoute)) {
+                var backgroundColor = MaterialTheme.colorScheme.primary
+                var letterColor = MaterialTheme.colorScheme.onPrimary
+                if (alteredScreen.contains(currentRoute)) {
+                    backgroundColor = MaterialTheme.colorScheme.onPrimary
+                    letterColor = MaterialTheme.colorScheme.secondary
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(LookDefault.Size.normal)
+                        .clip(
+                            RoundedCornerShape(
+                                bottomEnd = LookDefault.Padding.extraLarge,
+                                bottomStart = LookDefault.Padding.extraLarge
+                            )
                         )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
+                        .background(backgroundColor),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement =
+                    if (currentRoute != RouterSet.HomeworkAnswersPresentation.name)
+                        Arrangement.SpaceBetween
+                    else
+                        Arrangement.Center
+                ) {
+                    if (currentRoute != RouterSet.HomeworkAnswersPresentation.name) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(horizontal = LookDefault.Padding.large)
+                                .clickable { navController.popBackStack() }
+                        ) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.back)
+                                contentDescription = stringResource(R.string.back),
+                                tint = MaterialTheme.colorScheme.tertiary
+                            )
+                            ScaleText(
+                                text = stringResource(R.string.back),
+                                color = letterColor,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = LookDefault.FontSize.medium
                             )
                         }
-                    },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                    }
+                    val route = RouterSet.values().firstOrNull {it.name == currentRoute}
+                    ScaleText(
+                        text = route?.title ?: "",
+                        color = letterColor,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = LookDefault.FontSize.medium,
+                        modifier = Modifier.padding(horizontal = LookDefault.Padding.large)
                     )
-                )
+                }
             }
         },
         floatingActionButton = {
-            if (currentRoute != RouterSet.LoginPresentation.name
-                && currentRoute != RouterSet.LoadingPresentation.name
+            if (!ignoredScreen.contains(currentRoute) && !alteredScreen.contains(currentRoute)
                 && currentRoute != RouterSet.MorePresentation.name) {
                 FloatingActionButton(
                     onClick = { navController.navigate(RouterSet.MorePresentation.name) },
@@ -129,61 +165,9 @@ fun Router() {
         content = { padding ->
             NavHostContainer(navController = navController, padding = padding)
         },
-        bottomBar = {
-            if (currentRoute != RouterSet.LoginPresentation.name
-                && currentRoute != RouterSet.LoadingPresentation.name) {
-                BottomNavigationBar(navController = navController)
-            }
-        }
+        containerColor = MaterialTheme.colorScheme.secondary
     )
 }
-
-@Composable
-fun BottomNavigationBar(
-    navController: NavHostController
-) {
-    BottomNavigation(
-        modifier = Modifier
-            .defaultMinSize(minHeight = LookDefault.Padding.ultraLarge)
-    ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
-
-        val bottomNavItems = listOf(
-            BottomNavItem(
-                label = "Disciplina",
-                icon = Icons.Filled.Home,
-                iconSelected = Icons.Outlined.Home,
-                route = RouterSet.ClassCoursePresentation.name
-            ),
-            BottomNavItem(
-                label = "Aulas",
-                icon = Icons.Filled.Settings,
-                iconSelected = Icons.Outlined.Settings,
-                route = RouterSet.ClassTopicPresentation.name
-            )
-        )
-
-        bottomNavItems.forEach { navItem ->
-            BottomNavigationItem(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f, false),
-                selected = currentRoute == navItem.route,
-                onClick = {
-                    if (currentRoute == navItem.route)
-                        return@BottomNavigationItem
-                    navController.navigate(route = navItem.route)
-                },
-                icon = navItem.icon,
-                iconSelected = navItem.iconSelected,
-                label = navItem.label,
-            )
-        }
-
-    }
-}
-
 
 @Composable
 fun NavHostContainer(
@@ -207,6 +191,7 @@ fun NavHostContainer(
             }
             composable(RouterSet.MorePresentation.name) {
                 ConfigurationPresentation(navController)
+
             }
             composable(RouterSet.CoursePresentation.name) {
                 CoursePresentation(navController = navController)
@@ -239,7 +224,15 @@ fun NavHostContainer(
                     viewModel = viewModel
                 )
             }
+
+            composable(RouterSet.HomeworkAnswersPresentation.name) {
+                HomeworkAnswersPresentation(
+                    navController = navController,
+                    viewModel = viewModel
+                )
+            }
         }
+
             )
 }
 
@@ -316,5 +309,7 @@ fun BottomNavigationItem(
             )
         }
     }
-
 }
+
+
+

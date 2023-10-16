@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import com.github.edu.look.ui.theme.LookDefault
 
 @Composable
@@ -51,8 +52,9 @@ fun TopicCard(
                 fontSize = LookDefault.FontSize.medium,
                 color = colorTitle,
                 modifier = Modifier
-                    .padding(LookDefault.Padding.middle)
-                    .align(alignment = Alignment.CenterHorizontally)
+                    .padding(LookDefault.Padding.small)
+                    .align(alignment = Alignment.CenterHorizontally),
+                textAlign = TextAlign.Center
             )
             subTitle?.let {
                 ScaleText(
@@ -60,8 +62,9 @@ fun TopicCard(
                     fontSize = LookDefault.FontSize.small,
                     color = colorSubTitle,
                     modifier = Modifier
-                        .padding(LookDefault.Padding.middle)
-                        .align(alignment = Alignment.CenterHorizontally)
+                        .padding(LookDefault.Padding.small)
+                        .align(alignment = Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center
                 )
             }
         }
