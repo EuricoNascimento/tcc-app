@@ -3,52 +3,39 @@ package com.github.edu.look.ui.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.github.edu.look.R
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.presentation.configuration.ConfigurationPresentation
+import com.github.edu.look.ui.presentation.homework.HomeworkAnswersPresentation
+import com.github.edu.look.ui.presentation.homework.HomeworkQuestionPresentation
 import com.github.edu.look.ui.theme.LookDefault
 import com.github.edu.look.ui.viewmodel.homework.HomeworkViewModel
 
@@ -99,10 +86,17 @@ fun Router() {
                         .fillMaxWidth()
                         .height(LookDefault.Size.normal)
                         .clip(
-                            RoundedCornerShape(
-                                bottomEnd = LookDefault.Padding.extraLarge,
-                                bottomStart = LookDefault.Padding.extraLarge
-                            )
+                            if (currentRoute != RouterSet.MorePresentation.name) {
+                                RoundedCornerShape(
+                                    bottomEnd = LookDefault.Padding.large,
+                                    bottomStart = LookDefault.Padding.large
+                                )
+                            } else {
+                                RoundedCornerShape(
+                                    bottomEnd = LookDefault.Stroke.none,
+                                    bottomStart = LookDefault.Stroke.none
+                                )
+                            }
                         )
                         .background(backgroundColor),
                     verticalAlignment = Alignment.CenterVertically,
@@ -160,7 +154,10 @@ fun Router() {
             }
         },
         content = { padding ->
-            NavHostContainer(navController = navController, padding = padding)
+            NavHostContainer(
+                navController = navController,
+                padding = padding
+            )
         },
         containerColor = MaterialTheme.colorScheme.secondary
     )
@@ -169,7 +166,7 @@ fun Router() {
 @Composable
 fun NavHostContainer(
     navController: NavHostController,
-    padding: PaddingValues,
+    padding: PaddingValues
 ) {
     val viewModel: HomeworkViewModel = viewModel()
 
@@ -201,24 +198,22 @@ fun NavHostContainer(
                 ClassTopicPresentation(
                     navController = navController,
                     classroomId = it.arguments?.getLong("classroomId", 0L),
-                    type = it.arguments?.getString("type")
+                    type = it.arguments?.getString("type", "")
                 )
             }
-            composable(route = "${RouterSet.HomeworkQuestionPresentation.name}/" +
-                    "{classroomId}/{topicId}?questionId={questionId}?answer={answer}",
-                arguments = listOf(
-                    navArgument("questionId") { defaultValue = 0L },
-                    navArgument("answer") { defaultValue = "" }
-                )) {
+
+            composable(route = RouterSet.HomeworkQuestionPresentation.name +
+                    "/{classroomId}/{topicId}/{questionId}"
+            ){
                 HomeworkQuestionPresentation(
                     navController = navController,
-                    classroomId = it.arguments?.getLong("classroomId", 0L),
-                    homeworkId = it.arguments?.getLong("topicId", 0L),
                     questionId = it.arguments?.getLong("questionId"),
-                    answer = it.arguments?.getString("answer"),
+                    classroomId = it.arguments?.getLong("classroomId"),
+                    topicId = it.arguments?.getLong("topicId"),
                     viewModel = viewModel
                 )
             }
+
             composable(RouterSet.HomeworkAnswersPresentation.name) {
                 HomeworkAnswersPresentation(
                     navController = navController,
@@ -228,3 +223,5 @@ fun NavHostContainer(
         }
     )
 }
+
+

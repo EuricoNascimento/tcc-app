@@ -1,4 +1,4 @@
-package com.github.edu.look.ui.presentation
+package com.github.edu.look.ui.presentation.homework
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -8,15 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -26,43 +24,43 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.onPlaced
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.github.edu.look.R
+import com.github.edu.look.data.homework.Homework
+import com.github.edu.look.data.homework.Option
 import com.github.edu.look.data.homework.Question
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.component.TopicCard
+import com.github.edu.look.ui.presentation.RouterSet
 import com.github.edu.look.ui.theme.LookDefault
 import com.github.edu.look.ui.viewmodel.homework.HomeworkViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeworkQuestionPresentation(
-    viewModel: HomeworkViewModel,
     navController: NavController,
-    questionId: Long?,
-    homeworkId: Long?,
+    topicId: Long?,
     classroomId: Long?,
-    answer: String?
+    questionId: Long?,
+    viewModel: HomeworkViewModel
 ) {
-
+    viewModel.startRequesition(classroomId, topicId)
     val homework by viewModel.uiState.collectAsState()
-    val question = viewModel.getQuestion(questionId ?: 0L)
-    viewModel.classroomId = classroomId
-    viewModel.homeworkId = homeworkId
+    val question = viewModel.getQuestion(questionId)
+    val answer = viewModel.getAnswer(question.id)
 
     Scaffold(
         bottomBar = {
-            val bottomResource = if (viewModel.isLastQuestion(question) || !answer.isNullOrEmpty()) {
+            val bottomResource = if (viewModel.allQuestionAnswer()) {
                 R.string.finish
             } else {
                 R.string.next
@@ -73,20 +71,22 @@ fun HomeworkQuestionPresentation(
                     .defaultMinSize(minHeight = LookDefault.Padding.ultraLarge)
                     .clip(
                         RoundedCornerShape(
-                            topEnd = LookDefault.Padding.extraLarge,
-                            topStart = LookDefault.Padding.extraLarge
+                            topEnd = LookDefault.Padding.large,
+                            topStart = LookDefault.Padding.large
                         )
                     )
                     .clickable {
-                        if (viewModel.isLastQuestion(question) || !answer.isNullOrEmpty()) {
-                            navController.navigate(RouterSet.HomeworkAnswersPresentation.name)
+                        if (viewModel.allQuestionAnswer()) {
+                            navController.navigate(RouterSet.HomeworkAnswersPresentation.name) {
+                                popUpTo(RouterSet.HomeworkQuestionPresentation.name) {
+                                    inclusive = true
+                                }
+                            }
                         } else if (viewModel.wasAnsweredQuestion(question.id)) {
                             viewModel.questionNumber++
                             navController.navigate(
                                 RouterSet.HomeworkQuestionPresentation.name +
-                                        "/$classroomId/$homeworkId" +
-                                        "?questionId=${viewModel.getNextQuestion(question)}" +
-                                        "?answer=$answer"
+                                        "/${null}/${null}/${viewModel.getNextQuestionId()}"
                             )
                         }
                     }
@@ -111,6 +111,7 @@ fun HomeworkQuestionPresentation(
                 .fillMaxSize()
                 .padding(it)
                 .background(MaterialTheme.colorScheme.secondary)
+                .verticalScroll(rememberScrollState())
         ) {
             ScaleText(
                 text = homework.homeworkName,
@@ -129,58 +130,62 @@ fun HomeworkQuestionPresentation(
                 modifier = Modifier.padding(all = LookDefault.Padding.large)
             )
             Spacer(modifier = Modifier.padding(vertical =  LookDefault.Padding.middle))
-            SelectedOption(question = question, viewModel = viewModel, answer = answer)
+            SelectedOption(question = question, viewModel = viewModel, option = answer)
         }
     }
 
 }
 
 @Composable
-private fun SelectedOption(question: Question, viewModel: HomeworkViewModel, answer: String?) {
-    var selected by remember{ mutableStateOf(-1) }
-    var selectedAnswer by remember {
-        mutableStateOf(
-            if (answer.isNullOrEmpty()) {
-                null
-            } else {
-                answer
-            }
-        )
-    }
+private fun SelectedOption(question: Question, viewModel: HomeworkViewModel, option: Option?) {
+    var selected by remember{ mutableStateOf(-1L) }
+    var selectedAnswer by remember { mutableStateOf( option?.id ) }
+
+    val optionsGroup = question.option.chunked(2)
 
     ScaleText(
         text = stringResource(R.string.question,  viewModel.questionNumber, question.question),
         fontSize = LookDefault.FontSize.medium,
-        textAlign = TextAlign.Center,
-        color = MaterialTheme.colorScheme.onPrimary
+        textAlign = TextAlign.Justify,
+        color = MaterialTheme.colorScheme.onPrimary,
     )
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(count = 2),
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(all = LookDefault.Padding.large)
     ) {
-        items(count = question.option.size) { index ->
-            if (selectedAnswer != null && question.option[index] == selectedAnswer) {
-                selected = index
-                selectedAnswer = null
-            }
-            TopicCard(
-                title = question.option[index],
-                modifier = Modifier.height(height = LookDefault.Size.large),
-                colorTitle = if (index == selected) MaterialTheme.colorScheme.secondary
-                    else MaterialTheme.colorScheme.onPrimary,
-                colors = CardDefaults.cardColors(
-                    containerColor = if(index == selected) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.secondary
-                ),
-                border = BorderStroke(LookDefault.Stroke.small, MaterialTheme.colorScheme.onPrimary),
-                verticalArrangement = Arrangement.Center,
-                onClick = {
-                    selected = index
-                    viewModel.saveAnswer(question.id, question.option[index])
+        for (options in optionsGroup){
+            Row {
+                for (option in options) {
+                    if (selectedAnswer != null) {
+                        if (option.id == selectedAnswer) {
+                            selected = option.id
+                            selectedAnswer = null
+                        }
+                    }
+                    TopicCard(
+                        title = option.label,
+                        modifier = Modifier
+                            .height(height = LookDefault.Size.large)
+                            .weight(0.5f),
+                        colorTitle = if (option.id == selected) MaterialTheme.colorScheme.secondary
+                        else MaterialTheme.colorScheme.onPrimary,
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (option.id == selected) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.secondary
+                        ),
+                        border = BorderStroke(
+                            LookDefault.Stroke.small,
+                            MaterialTheme.colorScheme.onPrimary
+                        ),
+                        verticalArrangement = Arrangement.Center,
+                        onClick = {
+                            selected = option.id
+                            viewModel.saveAnswer(question.id, option)
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 }

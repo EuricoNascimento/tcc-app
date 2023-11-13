@@ -1,4 +1,4 @@
-package com.github.edu.look.ui.presentation
+package com.github.edu.look.ui.presentation.homework
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -10,11 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,6 +27,7 @@ import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.theme.LookDefault
 import com.github.edu.look.ui.viewmodel.homework.HomeworkViewModel
 import com.github.edu.look.ui.component.TopicCard
+import com.github.edu.look.ui.presentation.RouterSet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,8 +43,8 @@ fun HomeworkAnswersPresentation(
                     .defaultMinSize(minHeight = LookDefault.Padding.ultraLarge)
                     .clip(
                         RoundedCornerShape(
-                            topEnd = LookDefault.Padding.extraLarge,
-                            topStart = LookDefault.Padding.extraLarge
+                            topEnd = LookDefault.Padding.large,
+                            topStart = LookDefault.Padding.large
                         )
                     )
                     .clickable {
@@ -88,7 +86,7 @@ fun HomeworkAnswersPresentation(
                         .fillMaxWidth()
                 )
                 TopicCard(
-                    title = items[it].second,
+                    title = items[it].second.label,
                     modifier = Modifier
                         .padding(horizontal = LookDefault.Padding.large)
                         .height(height = LookDefault.Size.large)
@@ -103,9 +101,9 @@ fun HomeworkAnswersPresentation(
                         viewModel.questionNumber = it + 1
                         navController.navigate(
                             RouterSet.HomeworkQuestionPresentation.name +
-                                    "/${viewModel.classroomId}/${viewModel.homeworkId}" +
-                                    "?questionId=${items[it].first.id}?answer=${items[it].second}"
-                    ) }
+                                    "/${null}/${null}/${items[it].first.id}") {
+                        }
+                    }
                 )
             }
         }

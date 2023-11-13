@@ -32,7 +32,6 @@ fun ClassTopicPresentation(
         navController.popBackStack()
         return
     }
-    val routeName: String = RouterSet.valueOf(type).name
     LazyColumn (
         modifier = Modifier
             .fillMaxSize()
@@ -43,7 +42,12 @@ fun ClassTopicPresentation(
                 title = item.topic,
                 subTitle = stringResource(id = R.string.posted, item.date),
                 border = BorderStroke(LookDefault.Stroke.small, MaterialTheme.colorScheme.onPrimary),
-                onClick = { navController.navigate("$routeName/$classroomId/${item.id}") }
+                onClick = {
+                    if (type == ClassType.HOMEWORK.name ) {
+                        navController.navigate("${RouterSet.HomeworkQuestionPresentation.name}" +
+                                "/$classroomId/${item.id}/${null}")
+                    }
+                }
             )
         }
     }
