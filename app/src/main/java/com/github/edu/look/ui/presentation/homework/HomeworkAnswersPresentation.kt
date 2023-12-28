@@ -21,20 +21,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.github.edu.look.R
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.theme.LookDefault
-import com.github.edu.look.ui.viewmodel.homework.HomeworkViewModel
 import com.github.edu.look.ui.component.TopicCard
 import com.github.edu.look.ui.presentation.RouterSet
+import com.github.edu.look.ui.viewmodel.homework.HomeworkAnswerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeworkAnswersPresentation(
     navController: NavController,
-    viewModel: HomeworkViewModel
+    viewModel: HomeworkAnswerViewModel = hiltViewModel(),
+    classroomId: Long?,
+    homeworkId: Long?
 ) {
+
     Scaffold (
         bottomBar = {
             Row(
@@ -51,7 +55,12 @@ fun HomeworkAnswersPresentation(
                         navController.navigate(
                             RouterSet.ClassCoursePresentation.name
                                     + "/${viewModel.classroomId}"
-                        )
+                        ) {
+                            popUpTo(RouterSet.HomeworkAnswersPresentation.name
+                                    + "/{classroomId}/{homeworkId}") {
+                                inclusive = true
+                            }
+                        }
                     }
                     .background(color = MaterialTheme.colorScheme.onPrimary)
                     .padding(all = LookDefault.Padding.extraLarge),
@@ -67,7 +76,6 @@ fun HomeworkAnswersPresentation(
         },
         containerColor = MaterialTheme.colorScheme.secondary
     ) { padding ->
-        val items = viewModel.getQuestionWithAnswer()
         LazyColumn(
             modifier = Modifier
                 .padding(padding)
@@ -75,9 +83,11 @@ fun HomeworkAnswersPresentation(
                 .background(color = MaterialTheme.colorScheme.secondary),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(count = items.size) {
+            items(count = viewModel.answers.size) {
                 ScaleText(
-                    text = stringResource(R.string.question, (it + 1), items[it].first.question ),
+                    text = stringResource(
+                        R.string.question, (it + 1),
+                        viewModel.answers[it].first.question ),
                     fontSize = LookDefault.FontSize.medium,
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
@@ -86,7 +96,7 @@ fun HomeworkAnswersPresentation(
                         .fillMaxWidth()
                 )
                 TopicCard(
-                    title = items[it].second.label,
+                    title = viewModel.answers[it].second.label,
                     modifier = Modifier
                         .padding(horizontal = LookDefault.Padding.large)
                         .height(height = LookDefault.Size.large)
@@ -98,10 +108,16 @@ fun HomeworkAnswersPresentation(
                     ),
                     colorTitle = MaterialTheme.colorScheme.onPrimary,
                     onClick = {
-                        viewModel.questionNumber = it + 1
+                        val questionId = viewModel.answers[it].first.id.toString()
                         navController.navigate(
-                            RouterSet.HomeworkQuestionPresentation.name +
-                                    "/${null}/${null}/${items[it].first.id}") {
+                            RouterSet.HomeworkQuestionPresentation.name
+                                    + "?classroomId=$classroomId&topicId=$homeworkId" +
+                                    "&questionId=$questionId&isEdit=enable"
+                        ) {
+                            popUpTo(RouterSet.HomeworkAnswersPresentation.name
+                                    + "/{classroomId}/{homeworkId}") {
+                                inclusive = true
+                            }
                         }
                     }
                 )

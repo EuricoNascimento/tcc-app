@@ -44,7 +44,11 @@ fun LoadingPresentation(
         )
         delay(LookDefault.TimeDuration.normal.toLong())
 
-        navController.navigate(routerSet.name)
+        navController.navigate(routerSet.name) {
+            popUpTo(RouterSet.LoginPresentation.name) {
+                inclusive = true
+            }
+        }
     }
     SplashScreen()
 }

@@ -75,7 +75,13 @@ fun GoogleButton(
             .padding(horizontal = LookDefault.Padding.extraLarge),
         color = MaterialTheme.colorScheme.onPrimary,
         shape = MaterialTheme.shapes.large,
-        onClick = { navController.navigate(RouterSet.CoursePresentation.name) }
+        onClick = {
+            navController.navigate(RouterSet.CoursePresentation.name){
+                popUpTo(RouterSet.LoginPresentation.name) {
+                    inclusive = true
+                }
+            }
+        }
     ) {
         Row (
             modifier = Modifier.padding(all = LookDefault.Padding.large),

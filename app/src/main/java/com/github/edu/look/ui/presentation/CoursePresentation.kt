@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.github.edu.look.R
@@ -20,11 +21,12 @@ import com.github.edu.look.ui.component.TopicCard
 import com.github.edu.look.ui.theme.LookDefault
 import com.github.edu.look.ui.viewmodel.CourseViewModel
 import com.github.edu.look.ui.viewmodel.classtopic.ClassTopicViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 @Composable
 fun CoursePresentation(
     navController: NavController,
-    courseViewModel: CourseViewModel = viewModel(),
+    courseViewModel: CourseViewModel = hiltViewModel()
 ) {
     val classrooms by courseViewModel.uiState.collectAsState()
     LazyColumn(

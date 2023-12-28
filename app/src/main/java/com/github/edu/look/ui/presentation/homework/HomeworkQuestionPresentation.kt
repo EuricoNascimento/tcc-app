@@ -24,7 +24,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,38 +31,41 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.github.edu.look.R
-import com.github.edu.look.data.homework.Homework
 import com.github.edu.look.data.homework.Option
 import com.github.edu.look.data.homework.Question
 import com.github.edu.look.ui.component.ScaleText
 import com.github.edu.look.ui.component.TopicCard
 import com.github.edu.look.ui.presentation.RouterSet
 import com.github.edu.look.ui.theme.LookDefault
-import com.github.edu.look.ui.viewmodel.homework.HomeworkViewModel
+import com.github.edu.look.ui.viewmodel.homework.HomeworkQuestionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeworkQuestionPresentation(
     navController: NavController,
-    topicId: Long?,
+    homeworkId: Long?,
     classroomId: Long?,
     questionId: Long?,
-    viewModel: HomeworkViewModel
+    isEdit: String?,
+    viewModel: HomeworkQuestionViewModel = hiltViewModel()
 ) {
-    viewModel.startRequesition(classroomId, topicId)
+    viewModel.startRequisition(classroomId, homeworkId)
     val homework by viewModel.uiState.collectAsState()
-    val question = viewModel.getQuestion(questionId)
+    val question by remember {
+        viewModel.getFirstQuestion(questionId)
+    }
     val answer = viewModel.getAnswer(question.id)
 
     Scaffold(
         bottomBar = {
-            val bottomResource = if (viewModel.allQuestionAnswer()) {
-                R.string.finish
-            } else {
-                R.string.next
+            var bottomResource by remember {
+                mutableStateOf(R.string.next)
+            }
+            if (viewModel.allQuestionAnswer()) {
+                bottomResource = R.string.finish
             }
             Row(
                 modifier = Modifier
@@ -76,18 +78,24 @@ fun HomeworkQuestionPresentation(
                         )
                     )
                     .clickable {
-                        if (viewModel.allQuestionAnswer()) {
-                            navController.navigate(RouterSet.HomeworkAnswersPresentation.name) {
-                                popUpTo(RouterSet.HomeworkQuestionPresentation.name) {
+                        if (viewModel.allQuestionAnswer() || isEdit == "enable") {
+                            if (isEdit == "disable") {
+                                viewModel.saveAllAnswer()
+                            } else {
+                                viewModel.updateAnswer(questionId!!)
+                            }
+                            navController.navigate(
+                                RouterSet.HomeworkAnswersPresentation.name
+                                        + "/$classroomId/$homeworkId"
+                            ) {
+                                popUpTo(RouterSet.HomeworkQuestionPresentation.name +
+                                        "?classroomId={classroomId}&topicId={topicId}" +
+                                        "&questionId={questionId}&isEdit={isEdit}") {
                                     inclusive = true
                                 }
                             }
                         } else if (viewModel.wasAnsweredQuestion(question.id)) {
-                            viewModel.questionNumber++
-                            navController.navigate(
-                                RouterSet.HomeworkQuestionPresentation.name +
-                                        "/${null}/${null}/${viewModel.getNextQuestionId()}"
-                            )
+                            viewModel.updateQuestion(null)
                         }
                     }
                     .background(color = MaterialTheme.colorScheme.onPrimary),
@@ -119,7 +127,7 @@ fun HomeworkQuestionPresentation(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(all = LookDefault.Padding.large)
+                modifier = Modifier.padding(all = LookDefault.Padding.extraLarge)
             )
             Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.small))
             ScaleText(
@@ -127,7 +135,7 @@ fun HomeworkQuestionPresentation(
                 fontSize = LookDefault.FontSize.medium,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.padding(all = LookDefault.Padding.large)
+                modifier = Modifier.padding(all = LookDefault.Padding.extraLarge)
             )
             Spacer(modifier = Modifier.padding(vertical =  LookDefault.Padding.middle))
             SelectedOption(question = question, viewModel = viewModel, option = answer)
@@ -137,7 +145,7 @@ fun HomeworkQuestionPresentation(
 }
 
 @Composable
-private fun SelectedOption(question: Question, viewModel: HomeworkViewModel, option: Option?) {
+private fun SelectedOption(question: Question, viewModel: HomeworkQuestionViewModel, option: Option?) {
     var selected by remember{ mutableStateOf(-1L) }
     var selectedAnswer by remember { mutableStateOf( option?.id ) }
 
@@ -148,11 +156,14 @@ private fun SelectedOption(question: Question, viewModel: HomeworkViewModel, opt
         fontSize = LookDefault.FontSize.medium,
         textAlign = TextAlign.Justify,
         color = MaterialTheme.colorScheme.onPrimary,
+        modifier = Modifier
+            .padding(all = LookDefault.Padding.extraLarge)
+            .fillMaxWidth()
     )
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(all = LookDefault.Padding.large)
+            .padding(all = LookDefault.Padding.extraLarge)
     ) {
         for (options in optionsGroup){
             Row {
