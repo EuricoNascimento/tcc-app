@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.github.edu.look.R
-import com.github.edu.look.data.classroom.Classroom
 import com.github.edu.look.ui.component.TopicCard
 import com.github.edu.look.ui.theme.LookDefault
 
@@ -39,7 +38,7 @@ fun ClassCoursePresentation(
                 .padding(all = LookDefault.Padding.large),
             verticalArrangement = Arrangement.Center,
             onClick = {navController.navigate( "${RouterSet.ClassTopicPresentation.name}/" +
-                    "$classroomId?type=${RouterSet.CommunicationPresentation.name}" )}
+                    "$classroomId?type=${ClassType.COMMUNICATE.name}" )}
         )
 
         TopicCard(
@@ -51,7 +50,7 @@ fun ClassCoursePresentation(
                 .padding(all = LookDefault.Padding.large),
             verticalArrangement = Arrangement.Center,
                     onClick = {navController.navigate( "${RouterSet.ClassTopicPresentation.name}/" +
-                            "$classroomId?type=${RouterSet.ClassTopicPresentation.name}" )}
+                            "$classroomId?type=${ClassType.CLASS_TEXT.name}" )}
         )
 
         TopicCard(
@@ -63,8 +62,14 @@ fun ClassCoursePresentation(
                 .padding(all = LookDefault.Padding.large),
             verticalArrangement = Arrangement.Center,
             onClick = {navController.navigate( "${RouterSet.ClassTopicPresentation.name}/" +
-                    "$classroomId?type=${RouterSet.HomeworkQuestionPresentation.name}" )}
+                    "$classroomId?type=${ClassType.HOMEWORK.name}" )}
         )
         Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.large))
     }
+}
+
+enum class ClassType {
+    HOMEWORK,
+    COMMUNICATE,
+    CLASS_TEXT
 }
