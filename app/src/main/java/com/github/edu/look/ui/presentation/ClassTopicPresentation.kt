@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.github.edu.look.R
@@ -25,14 +26,13 @@ fun ClassTopicPresentation(
     navController: NavController,
     classroomId: Long?,
     type: String?,
-    classTopicViewModel: ClassTopicViewModel = viewModel(),
+    classTopicViewModel: ClassTopicViewModel = hiltViewModel()
 ) {
     val topics by classTopicViewModel.uiState.collectAsState()
     if (type.isNullOrEmpty() || classroomId == null) {
         navController.popBackStack()
         return
     }
-    val routeName: String = RouterSet.valueOf(type).name
     LazyColumn (
         modifier = Modifier
             .fillMaxSize()
@@ -43,7 +43,19 @@ fun ClassTopicPresentation(
                 title = item.topic,
                 subTitle = stringResource(id = R.string.posted, item.date),
                 border = BorderStroke(LookDefault.Stroke.small, MaterialTheme.colorScheme.onPrimary),
-                onClick = { navController.navigate("$routeName/$classroomId/${item.id}") }
+                onClick = {
+                    if (type == ClassType.HOMEWORK.name ) {
+                        navController.navigate(
+                            RouterSet.HomeworkQuestionPresentation.name
+                                    + "?classroomId=$classroomId&topicId=${item.id}&isEdit=disable"
+                        ){
+                            popUpTo(RouterSet.ClassTopicPresentation.name +
+                                    "$classroomId") {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
             )
         }
     }
