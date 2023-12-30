@@ -2,11 +2,13 @@ package com.github.edu.look.ui.viewmodel.classTexts
 
 import androidx.lifecycle.ViewModel
 import com.github.edu.look.data.classTexts.ClassTexts
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class ClassTextsViewModel: ViewModel() {
-
+@HiltViewModel
+class ClassTextsViewModel @Inject constructor(): ViewModel() {
         private var _uiState =  MutableStateFlow(mutableListOf<ClassTexts>())
         val uiState get() = _uiState.asStateFlow()
 

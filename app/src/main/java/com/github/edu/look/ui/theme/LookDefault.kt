@@ -24,7 +24,6 @@ object LookDefault {
         val large = 36.sp
     }
 
-
     object Size {
         val small = 75.dp
         val normal = 150.dp
