@@ -44,13 +44,11 @@ enum class RouterSet(val title: String) {
     ClassCoursePresentation("Disciplina"),
     LoginPresentation("Login"),
     LoadingPresentation("Loading"),
-    CommunicationPresentation("Comunicados"),
+    ClassTextsPresentation("Comunicados"),
     HomeworkQuestionPresentation("Atividade"),
     HomeworkAnswersPresentation("Respostas"),
     CoursePresentation("Turmas")
 }
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -214,6 +212,30 @@ fun NavHostContainer(
                 )
             }
 
+            composable(RouterSet.ClassTextsPresentation.name
+                    + "/{classroomId}/{type}/{topicId}",
+                listOf(
+                    navArgument("classroomId") {
+                        type = NavType.LongType
+                    },
+                    navArgument("type") {
+                        type = NavType.StringType
+                    },
+                    navArgument("topicId") {
+                        type = NavType.LongType
+                    }
+                )
+            ) {
+                val classroomId = it.arguments?.getString("classroomId", "-1")
+                val type = it.arguments?.getString("type", "")
+                val communicationId = it.arguments?.getString("topicId", "-1")
+                ClassTextsPresentation(
+                    navController = navController,
+                    classroomId = classroomId?.toLong(),
+                    type = type,
+                    communicationId = communicationId?.toLong()
+                )
+            }
             composable(route = RouterSet.HomeworkQuestionPresentation.name +
                     "?classroomId={classroomId}&topicId={topicId}&questionId={questionId}&isEdit={isEdit}",
                 listOf(
