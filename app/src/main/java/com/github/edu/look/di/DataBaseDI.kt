@@ -1,27 +1,20 @@
 package com.github.edu.look.di
 
 import android.content.Context
-import androidx.room.Room
+import com.github.edu.look.repository.CourseRepository
 import com.github.edu.look.repository.HomeworkRepository
-import com.github.edu.look.repository.LoginRepository
-import com.github.edu.look.repository.local.LookDataBase
-import com.github.edu.look.repository.local.StudentsProfileDao
 import com.github.edu.look.repository.remote.EduLookService
-import com.github.edu.look.repository.remote.network.AuthInterceptor
 import com.github.edu.look.repository.remote.network.Urls
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import okhttp3.Interceptor.*
-import okhttp3.OkHttpClient
-import okhttp3.Response
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.io.IOException
 import javax.inject.Singleton
 
 
@@ -36,18 +29,15 @@ object DataBaseDI {
 
     @Singleton
     @Provides
-    fun providesOkHttpClient(@ApplicationContext context: Context): OkHttpClient =
-        OkHttpClient
-            .Builder()
-            .addInterceptor(AuthInterceptor(context))
-            .build()
+    fun provideMoshi(): Moshi = Moshi.Builder()
+    .add(KotlinJsonAdapterFactory())
+    .build()
 
     @Singleton
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-        .addConverterFactory(MoshiConverterFactory.create())
+    fun provideRetrofit(moshi: Moshi): Retrofit = Retrofit.Builder()
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .baseUrl(Urls.LOOK_API)
-        .client(okHttpClient)
         .build()
 
     @Singleton
@@ -56,5 +46,8 @@ object DataBaseDI {
 
     @Singleton
     @Provides
-    fun providesRepository(eduLookService: EduLookService) = LoginRepository(eduLookService)
+    fun providesCourseRepository(
+        @ApplicationContext context: Context,
+        eduLookService: EduLookService
+    ) = CourseRepository(context, eduLookService)
 }

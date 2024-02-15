@@ -9,6 +9,6 @@ interface EduLookService {
     @GET("/v1/students/profile")
     suspend fun getUserProfile(@Header("Authorization") token: String): StudentProfile
 
-    @GET("v1/courses")
+    @GET("/v1/courses")
     suspend fun getCourses(@Header("Authorization") token: String): List<Course>
 }

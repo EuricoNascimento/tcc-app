@@ -1,6 +1,5 @@
 package com.github.edu.look
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.room.Room
-import com.github.edu.look.repository.local.LookDataBase
 import com.github.edu.look.ui.presentation.Router
 import com.github.edu.look.ui.theme.LookTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn

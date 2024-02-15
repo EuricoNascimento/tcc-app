@@ -14,8 +14,6 @@ class LoginViewModel @Inject constructor(
     @ApplicationContext context: Context
 ): ViewModel() {
     private val sessionManager = SessionManager(context)
-    private val _user: MutableStateFlow<User?> = MutableStateFlow(null)
-    val user: StateFlow<User?> = _user
 
      fun signIn(idToken: String?): Boolean {
          return if (!idToken.isNullOrEmpty()) {
