@@ -4,7 +4,7 @@ import android.content.Context
 import com.github.edu.look.repository.CourseRepository
 import com.github.edu.look.repository.HomeworkRepository
 import com.github.edu.look.repository.remote.EduLookService
-import com.github.edu.look.repository.remote.network.Urls
+import com.github.edu.look.utils.Constants
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -37,7 +37,7 @@ object DataBaseDI {
     @Provides
     fun provideRetrofit(moshi: Moshi): Retrofit = Retrofit.Builder()
         .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .baseUrl(Urls.LOOK_API)
+        .baseUrl(Constants.LOOK_API)
         .build()
 
     @Singleton
