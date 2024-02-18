@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.github.edu.look.data.homework.Homework
 import com.github.edu.look.data.homework.Option
 import com.github.edu.look.data.homework.Question
-import com.github.edu.look.services.HomeworkService
+import com.github.edu.look.repository.HomeworkRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeworkQuestionViewModel @Inject constructor(
-    private val homeworkService: HomeworkService
+    private val homeworkRepository: HomeworkRepository
 ): ViewModel() {
     private var _uiState = MutableStateFlow(Homework())
     val uiState
@@ -24,7 +24,7 @@ class HomeworkQuestionViewModel @Inject constructor(
     var questionNumber = 1
 
     fun startRequisition(classroomId: Long?, topicId: Long?) {
-        val homework = homeworkService.startRequisition(classroomId, topicId) ?: return
+        val homework = homeworkRepository.startRequisition(classroomId, topicId) ?: return
         _uiState = MutableStateFlow(homework)
     }
 
@@ -63,14 +63,14 @@ class HomeworkQuestionViewModel @Inject constructor(
 
     fun updateAnswer(questionId: Long) {
         val updateAnswer = Pair(getQuestion(answersState.value.keys.first()), answersState.value.values.first())
-        val allAnswer = homeworkService.homeworkAnswers.map {
+        val allAnswer = homeworkRepository.homeworkAnswers.map {
             if (it.first.id == questionId) updateAnswer else it
         }
-        homeworkService.homeworkAnswers = allAnswer
+        homeworkRepository.homeworkAnswers = allAnswer
     }
 
     fun saveAllAnswer() {
-        homeworkService.homeworkAnswers = answersState.value.map { Pair(getQuestion(it.key), it.value) }
+        homeworkRepository.homeworkAnswers = answersState.value.map { Pair(getQuestion(it.key), it.value) }
     }
 }
 

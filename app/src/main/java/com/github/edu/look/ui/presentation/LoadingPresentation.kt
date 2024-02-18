@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.github.edu.look.R
 import com.github.edu.look.ui.theme.LookDefault
@@ -26,8 +27,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun LoadingPresentation(
-    navController: NavHostController,
-    routerSet: RouterSet
+    navController: NavHostController
 ) {
     val scale = remember {
         Animatable(0f)
@@ -43,9 +43,8 @@ fun LoadingPresentation(
             )
         )
         delay(LookDefault.TimeDuration.normal.toLong())
-
-        navController.navigate(routerSet.name) {
-            popUpTo(RouterSet.LoginPresentation.name) {
+        navController.navigate(RouterSet.LoginPresentation.name) {
+            popUpTo(RouterSet.LoadingPresentation.name) {
                 inclusive = true
             }
         }

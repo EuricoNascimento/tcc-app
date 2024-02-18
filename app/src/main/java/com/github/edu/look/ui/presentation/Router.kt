@@ -47,7 +47,8 @@ enum class RouterSet(val title: String) {
     ClassTextsPresentation("Comunicados"),
     HomeworkQuestionPresentation("Atividade"),
     HomeworkAnswersPresentation("Respostas"),
-    CoursePresentation("Turmas")
+    CoursePresentation("Turmas"),
+    WebViewPresentation("WebView")
 }
 
 
@@ -59,7 +60,11 @@ fun Router() {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     var currentRoute = navBackStackEntry?.destination?.route ?: ""
-    val ignoredScreen = listOf(RouterSet.LoginPresentation.name, RouterSet.LoadingPresentation.name)
+    val ignoredScreen = listOf(
+        RouterSet.LoginPresentation.name,
+        RouterSet.LoadingPresentation.name,
+        RouterSet.WebViewPresentation.name
+    )
     val alteredScreen = listOf(
         RouterSet.HomeworkAnswersPresentation.name,
         RouterSet.HomeworkQuestionPresentation.name
@@ -176,7 +181,7 @@ fun NavHostContainer(
             .background(color = MaterialTheme.colorScheme.tertiary),
         builder = {
             composable(RouterSet.LoadingPresentation.name) {
-                LoadingPresentation(navController, RouterSet.LoginPresentation)
+                LoadingPresentation(navController)
             }
             composable(RouterSet.LoginPresentation.name) {
                 LoginPresentation(navController)

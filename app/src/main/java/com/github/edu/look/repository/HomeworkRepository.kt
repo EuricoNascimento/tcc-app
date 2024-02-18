@@ -1,10 +1,10 @@
-package com.github.edu.look.services
+package com.github.edu.look.repository
 
 import com.github.edu.look.data.homework.Homework
 import com.github.edu.look.data.homework.Option
 import com.github.edu.look.data.homework.Question
 
-class HomeworkService {
+class HomeworkRepository {
     private var cacheHomework: Homework? = null
     private var questions: MutableList<Question> = mutableListOf()
     var classroomId: Long? = null
