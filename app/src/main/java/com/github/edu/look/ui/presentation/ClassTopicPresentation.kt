@@ -12,8 +12,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.github.edu.look.R
+import com.github.edu.look.data.enums.ClassType
 import com.github.edu.look.ui.component.TopicCard
 import com.github.edu.look.ui.theme.LookDefault
 import com.github.edu.look.ui.viewmodel.classtopic.ClassTopicViewModel
@@ -21,47 +23,66 @@ import com.github.edu.look.ui.viewmodel.classtopic.ClassTopicViewModel
 @Composable
 fun ClassTopicPresentation(
     navController: NavController,
-    classroomId: Long?,
+    classroomId: String?,
     type: String?,
-    classTopicViewModel: ClassTopicViewModel = hiltViewModel()
+    viewModel: ClassTopicViewModel = hiltViewModel()
 ) {
-    val topics by classTopicViewModel.uiState.collectAsState()
     if (type.isNullOrEmpty() || classroomId == null) {
         navController.popBackStack()
         return
     }
+
+    if (viewModel.classType == null || viewModel.classType?.name != type) {
+        viewModel.classType = ClassType.getClassType(type)
+        viewModel.getClassTopic(classroomId)
+    }
+
+    val classMaterial by viewModel.materialTopicsState.collectAsState()
+    val announcements by viewModel.uiState.collectAsState()
+
     LazyColumn (
         modifier = Modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.secondary)
     ) {
-        items(items = topics) { item ->
-            TopicCard(
-                title = item.topic,
-                subTitle = stringResource(id = R.string.posted, item.date),
-                border = BorderStroke(LookDefault.Stroke.small, MaterialTheme.colorScheme.onPrimary),
-                onClick = {
-                    when (type) {
-                        ClassType.HOMEWORK.name -> {
-                            navController.navigate(
-                                RouterSet.HomeworkQuestionPresentation.name
-                                        + "?classroomId=$classroomId&topicId=${item.id}&isEdit=disable"
-                            ){
-                                popUpTo(RouterSet.ClassTopicPresentation.name +
-                                        "$classroomId") {
-                                    inclusive = true
-                                }
-                            }
+        when(viewModel.classType) {
+            ClassType.CLASS_MATERIAL -> {
+                items(items = classMaterial) { item ->
+                    TopicCard(
+                        title = item.title,
+                        subTitle = stringResource(id = R.string.posted, item.createdAt),
+                        border = BorderStroke(
+                            LookDefault.Stroke.small,
+                            MaterialTheme.colorScheme.onPrimary
+                        ),
+                        onClick = {
+//                            navController.navigate(
+//                                RouterSet.ClassMaterialsPresentation.name
+//                                        + "/$classroomId/$type/${item.id}"
+//                            )
                         }
-                        ClassType.COMMUNICATE.name -> {
+                    )
+                }
+            }
+            ClassType.COMMUNICATE -> {
+                items(items = announcements) { item ->
+                    TopicCard(
+                        title = item.topic,
+                        subTitle = stringResource(id = R.string.posted, item.date),
+                        border = BorderStroke(
+                            LookDefault.Stroke.small,
+                            MaterialTheme.colorScheme.onPrimary
+                        ),
+                        onClick = {
                             navController.navigate(
-                                RouterSet.ClassTextsPresentation.name
+                                RouterSet.ClassMaterialsPresentation.name
                                         + "/$classroomId/$type/${item.id}"
                             )
                         }
-                    }
+                    )
                 }
-            )
+            }
+            else -> {}
         }
     }
 }

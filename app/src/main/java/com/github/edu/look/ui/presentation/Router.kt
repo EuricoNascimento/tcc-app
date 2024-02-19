@@ -39,7 +39,7 @@ import com.github.edu.look.ui.presentation.homework.HomeworkQuestionPresentation
 import com.github.edu.look.ui.theme.LookDefault
 
 enum class RouterSet(val title: String) {
-    ClassTopicPresentation("Aulas"),
+    ClassTopicPresentation("Topicos"),
     MorePresentation("Mais"),
     ClassCoursePresentation("Disciplina"),
     LoginPresentation("Login"),
@@ -48,7 +48,7 @@ enum class RouterSet(val title: String) {
     HomeworkQuestionPresentation("Atividade"),
     HomeworkAnswersPresentation("Respostas"),
     CoursePresentation("Turmas"),
-    WebViewPresentation("WebView")
+    ClassMaterialsPresentation("Aulas")
 }
 
 
@@ -62,8 +62,7 @@ fun Router() {
     var currentRoute = navBackStackEntry?.destination?.route ?: ""
     val ignoredScreen = listOf(
         RouterSet.LoginPresentation.name,
-        RouterSet.LoadingPresentation.name,
-        RouterSet.WebViewPresentation.name
+        RouterSet.LoadingPresentation.name
     )
     val alteredScreen = listOf(
         RouterSet.HomeworkAnswersPresentation.name,
@@ -212,7 +211,7 @@ fun NavHostContainer(
                 val classroomId = it.arguments?.getString("classroomId", "-1")
                 ClassTopicPresentation(
                     navController = navController,
-                    classroomId = classroomId?.toLong(),
+                    classroomId = classroomId,
                     type = it.arguments?.getString("type", "")
                 )
             }
