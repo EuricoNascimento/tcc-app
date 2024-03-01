@@ -3,6 +3,7 @@ package com.github.edu.look.di
 import android.content.Context
 import com.github.edu.look.repository.CourseRepository
 import com.github.edu.look.repository.HomeworkRepository
+import com.github.edu.look.repository.local.SessionManager
 import com.github.edu.look.repository.remote.EduLookService
 import com.github.edu.look.utils.Constants
 import com.squareup.moshi.Moshi
@@ -25,10 +26,6 @@ object DataBaseDI {
 
     @Singleton
     @Provides
-    fun provideHomeworkService() = HomeworkRepository()
-
-    @Singleton
-    @Provides
     fun provideMoshi(): Moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
@@ -46,8 +43,16 @@ object DataBaseDI {
 
     @Singleton
     @Provides
+    fun provideSessionManager(@ApplicationContext context: Context) = SessionManager(context)
+
+    @Singleton
+    @Provides
     fun providesCourseRepository(
-        @ApplicationContext context: Context,
-        eduLookService: EduLookService
-    ) = CourseRepository(context, eduLookService)
+        eduLookService: EduLookService,
+        sessionManager: SessionManager
+    ) = CourseRepository(eduLookService, sessionManager)
+
+    @Singleton
+    @Provides
+    fun provideHomeworkService() = HomeworkRepository()
 }

@@ -36,7 +36,7 @@ fun CoursePresentation(
                 subTitle = item.teachers?.firstOrNull()?.name ?: "",
                 border = BorderStroke(LookDefault.Stroke.small, MaterialTheme.colorScheme.onPrimary),
                 onClick = {
-                    //navController.navigate("${RouterSet.ClassCoursePresentation.name}/${item.id}")
+                    navController.navigate("${RouterSet.ClassCoursePresentation.name}/${item.id}")
                 }
             )
         }

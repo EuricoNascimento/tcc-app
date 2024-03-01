@@ -12,10 +12,9 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class CourseRepository @Inject constructor(
-    context: Context,
-    val eduLookService: EduLookService
+    val eduLookService: EduLookService,
+    val sessionManager: SessionManager
 ) {
-    var sessionManager = SessionManager(context)
     suspend fun getCourses(): Flow<ApiResult<List<Course>>> = flow {
         emit(ApiResult.Loading)
         val token = sessionManager.fetchAuthToken()

@@ -17,7 +17,7 @@ import javax.inject.Inject
 class CourseViewModel @Inject constructor(
     private val courseRepository: CourseRepository
 ): ViewModel() {
-    private var _coursesState =  MutableStateFlow(listOf<Course>())
+    private var _coursesState = MutableStateFlow(listOf<Course>())
     val coursesState get() = _coursesState.asStateFlow()
 
     fun getCourses() = viewModelScope.launch {

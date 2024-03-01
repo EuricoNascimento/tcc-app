@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.github.edu.look.R
+import com.github.edu.look.data.enums.ClassType
 import com.github.edu.look.ui.component.TopicCard
 import com.github.edu.look.ui.theme.LookDefault
 
@@ -21,7 +22,7 @@ import com.github.edu.look.ui.theme.LookDefault
 fun ClassCoursePresentation(
     navController: NavController,
     classroomId: Long?
-    ) {
+) {
 
     Column (
         modifier = Modifier
@@ -50,7 +51,7 @@ fun ClassCoursePresentation(
                 .padding(all = LookDefault.Padding.large),
             verticalArrangement = Arrangement.Center,
                     onClick = {navController.navigate( "${RouterSet.ClassTopicPresentation.name}/" +
-                            "$classroomId?type=${ClassType.CLASS_TEXT.name}" )}
+                            "$classroomId?type=${ClassType.CLASS_MATERIAL.name}" )}
         )
 
         TopicCard(
@@ -66,10 +67,4 @@ fun ClassCoursePresentation(
         )
         Spacer(modifier = Modifier.padding(vertical = LookDefault.Padding.large))
     }
-}
-
-enum class ClassType {
-    HOMEWORK,
-    COMMUNICATE,
-    CLASS_TEXT
 }
